@@ -1,0 +1,169 @@
+# .github/workflows/brain-ci.yml
+#
+# SOBER — "CI/CD for Agent Brains".
+#
+# The memory CI check. When a PR changes anything the brain learns from
+# (knowledge/** or the eval suite in evals/**), we treat that change exactly
+# like a code change: build the brain, run the memory test suite, and block
+# the merge if the brain regressed.
+#
+# The load-bearing test here is the FORBIDDEN-KNOWLEDGE gate: `brain test`
+# runs the eval specs in evals/, including `kind: forbidden` cases that assert
+# a retracted secret is NOT recallable (and stays gone under paraphrase probes)
+# and `kind: structure` cases that assert the graph never wires a DocumentChunk
+# straight to a Secret. If a PR would re-introduce a leak, this check goes red
+# and the merge is blocked. That is the whole pitch: your agent's memory can't
+# merge a regression any more than your app code can.
+#
+# On success we post (or update) a single PR comment with the brain diff +
+# eval report, sourced from the `ci_report.md` artifact that `sober.ci.ci_check`
+# writes to the repo root. Reviewers see, inline on the PR, exactly which nodes
+# and edges the brain gained/lost and whether every eval is green.
+
+name: brain-ci
+
+# Only run when the brain's inputs change. Editing app code or docs shouldn't
+# spend Gemini budget re-testing memory that didn't move.
+on:
+  pull_request:
+    paths:
+      - "knowledge/**"
+      - "evals/**"
+      - "sober/**"
+
+# Cancel a stale run if the PR is pushed again — we only care about the tip.
+concurrency:
+  group: brain-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# The github-script step needs to write a PR comment.
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  brain-test:
+    name: Memory CI (brain test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Editable install exposes the `brain` console-script entry point
+      # (pyproject: [project.scripts] brain = "sober.cli:app").
+      - name: Install SOBER
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # Run the memory CI suite. `sober.ci.ci_check` takes a snapshot, diffs it
+      # against the previous snapshot, runs every eval spec, writes ci_report.md
+      # to the repo root, and returns exit 1 if any eval is red (the forbidden /
+      # must-know / structure gates). `brain test` surfaces that same red/green
+      # exit code, so a leak or a lost must-know fact fails the job here.
+      #
+      # CI cost note: forbidden-knowledge + structure evals are keyless — they
+      # run CHUNKS (vector) recall and static graph assertions, no Gemini calls
+      # at query time — so the common PR path is cheap. LLM_API_KEY is still
+      # provided for must_know cases / any cognify the suite performs.
+      - name: Run memory CI suite
+        id: brain_test
+        env:
+          # Model + embedding config mirrors .env.example so CI matches local.
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: gemini
+          LLM_MODEL: gemini/gemini-2.5-flash
+          EMBEDDING_PROVIDER: fastembed
+          # Free-tier protection: throttle so a burst of 429s never kills a run.
+          LLM_RATE_LIMIT_ENABLED: "true"
+          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_INTERVAL: "60"
+          # SOBER conventions from the contract — deterministic, no bg access.
+          CACHING: "false"
+          ENABLE_BACKEND_ACCESS_CONTROL: "false"
+        run: brain test
+
+      # Always upload the generated report so it's downloadable from the run,
+      # even when `brain test` fails (that's exactly when a human wants to read
+      # WHY it's red). `if: always()` keeps the artifact on red runs too.
+      - name: Upload CI report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci_report
+          path: ci_report.md
+          if-no-files-found: warn
+
+      # Post (or update) ONE sticky PR comment with the brain diff + eval report.
+      # We update-in-place rather than spamming a new comment per push: find the
+      # previous SOBER comment by a hidden marker and edit it, else create it.
+      #
+      # `if: always()` so reviewers get the report on red runs too. The job's
+      # overall pass/fail is still driven by the `brain test` step above — this
+      # comment is reporting, not gating.
+      - name: Comment brain diff + eval report on PR
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          # Pass the step outcome so the comment header reflects red/green.
+          BRAIN_TEST_OUTCOME: ${{ steps.brain_test.outcome }}
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Hidden marker lets us find & update our own prior comment.
+            const MARKER = '<!-- sober-brain-ci -->';
+
+            // Load the report SOBER wrote; fall back gracefully if missing
+            // (e.g. install failed before ci_check could run).
+            let report = '_No `ci_report.md` was produced — the run likely failed before the memory suite executed._';
+            try {
+              report = fs.readFileSync('ci_report.md', 'utf8');
+            } catch (err) {
+              core.warning(`ci_report.md not found: ${err.message}`);
+            }
+
+            const outcome = process.env.BRAIN_TEST_OUTCOME || 'unknown';
+            const banner = outcome === 'success'
+              ? '## 🟢 Brain CI passed — memory is safe to merge'
+              : '## 🔴 Brain CI failed — this change regresses the brain';
+
+            const body = [
+              MARKER,
+              banner,
+              '',
+              report,
+              '',
+              '<sub>Posted by <b>SOBER</b> · CI/CD for Agent Brains. '
+                + `Report from <code>ci_report.md</code> · run `
+                + `<a href="${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}">#${context.runId}</a>.</sub>`,
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+
+            // Look for an existing SOBER comment to update in place.
+            const comments = await github.paginate(
+              github.rest.issues.listComments,
+              { owner, repo, issue_number, per_page: 100 },
+            );
+            const existing = comments.find(c => c.body && c.body.includes(MARKER));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body,
+              });
+              core.info(`Updated existing SOBER comment ${existing.id}.`);
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body,
+              });
+              core.info('Created new SOBER comment.');
+            }

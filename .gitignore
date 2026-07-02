@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.cognee_system/
+.data_storage/
+.artifacts/
+*.lance/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+snapshots/*.json
+!snapshots/.gitkeep

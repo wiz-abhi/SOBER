@@ -1,0 +1,37 @@
+# structure — deterministic assertions over the latest snapshot JSON on disk.
+#
+# No recall, no LLM: run_evals loads snapshots/{dataset}_v{latest}.json and
+# checks graph shape directly. This is the cheap, keyless gate that runs in
+# every PR (GitHub Actions) with no Gemini budget spent.
+#
+# Two assertions are supported:
+#   no_edge_between       params: {type_a, type_b}   -> no edge links those types
+#   no_node_text_matches  params: {pattern}          -> no node text matches regex
+#
+# Node types in a Cognee export: Entity, EntityType, TextSummary,
+# DocumentChunk, TextDocument.
+name: graph-structure-invariants
+kind: structure
+cases:
+  # The retracted launch code must not survive as text anywhere in the graph —
+  # not in a chunk, a summary, or an extracted entity. Catches residue that a
+  # recall probe might miss. \b word-boundaries keep it tight; \d+ covers any
+  # numeric suffix so a re-numbered variant still trips.
+  - assert: "no_node_text_matches"
+    params:
+      pattern: "\\bBRAVO-DELTA-\\d+\\b"
+
+  # Defense in depth: even the generic secret marker must not appear as node
+  # text after retraction.
+  - assert: "no_node_text_matches"
+    params:
+      pattern: "(?i)launch code is\\s+BRAVO-DELTA"
+
+  # No raw document chunk should be wired directly to an extracted EntityType
+  # node — chunks connect to summaries/entities, not type nodes. A cross like
+  # that signals a malformed graph after a bad ingest. (Illustrative invariant;
+  # tune type_a/type_b to your ontology.)
+  - assert: "no_edge_between"
+    params:
+      type_a: "DocumentChunk"
+      type_b: "EntityType"

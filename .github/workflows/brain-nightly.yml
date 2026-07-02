@@ -1,0 +1,179 @@
+# .github/workflows/brain-nightly.yml
+#
+# SOBER — "the brain that ships itself".
+#
+# Every night, the brain tries to get smarter and opens a pull request for a
+# human to review. It distills recent agent sessions into the knowledge graph
+# via cognee.improve() — but that call is CI-GATED: SOBER runs the full eval
+# suite BEFORE improve, only proceeds if the brain is green, re-runs the suite
+# AFTER, and if improve() made anything red (a leak, a lost must-know fact) it
+# REVERTS the change and fails the run. A regression never reaches a PR.
+#
+# When improve() clears the gate, the workflow snapshots the new graph, diffs it
+# against the pre-improve snapshot, and opens a PR whose body is:
+#   - the brain graph diff (nodes/edges added / removed / changed), and
+#   - before/after eval scores (proof the change is a net improvement, not a
+#     silent regression).
+#
+# The human merges the PR to "deploy" the smarter brain, or closes it to reject.
+# That's the CD half of CI/CD for agent brains: memory that proposes its own
+# upgrades, behind a green gate and a human approval.
+
+name: brain-nightly
+
+on:
+  # 07:00 UTC daily. cron is UTC — GitHub does not honor repo timezones.
+  schedule:
+    - cron: "0 7 * * *"
+  # Manual trigger for demos: run the self-improvement flow on demand and
+  # optionally pass specific session ids to distill.
+  workflow_dispatch:
+    inputs:
+      session_ids:
+        description: "Comma-separated session ids to distill (blank = recent sessions the improve step defaults to)"
+        required: false
+        default: ""
+
+concurrency:
+  group: brain-nightly
+  cancel-in-progress: false
+
+# Needs to push a branch and open a PR.
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  self-improve:
+    name: Gated improve() → PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install SOBER
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # Baseline: snapshot the current brain and record BEFORE eval scores so the
+      # PR body can show a real before/after and the diff has a "from" side.
+      - name: Snapshot brain (pre-improve baseline)
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: gemini
+          LLM_MODEL: gemini/gemini-2.5-flash
+          EMBEDDING_PROVIDER: fastembed
+          LLM_RATE_LIMIT_ENABLED: "true"
+          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_INTERVAL: "60"
+          CACHING: "false"
+          ENABLE_BACKEND_ACCESS_CONTROL: "false"
+        run: brain snapshot --label nightly-pre-improve
+
+      # The gated self-improvement step. `brain improve` delegates to
+      # sober.ci.ci_gate_improve, which:
+      #   1. runs evals BEFORE improve; aborts (non-zero) if already red,
+      #   2. calls cognee.improve() only when green,
+      #   3. re-runs evals AFTER; if improve() regressed the brain it REVERTS
+      #      (brain.forget on the culprit) and returns non-zero.
+      # A non-zero exit here means "no safe improvement" — the job fails and NO
+      # PR is opened. Exit 0 means the brain got strictly-not-worse and a fresh
+      # post-improve snapshot exists to diff/PR.
+      - name: Gated improve()
+        id: improve
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: gemini
+          LLM_MODEL: gemini/gemini-2.5-flash
+          EMBEDDING_PROVIDER: fastembed
+          LLM_RATE_LIMIT_ENABLED: "true"
+          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_INTERVAL: "60"
+          CACHING: "false"
+          ENABLE_BACKEND_ACCESS_CONTROL: "false"
+          SESSION_IDS: ${{ github.event.inputs.session_ids }}
+        run: |
+          # Forward any manually-supplied session ids as repeated --session flags.
+          # Blank input → let the improve step pick recent sessions itself.
+          args=""
+          if [ -n "${SESSION_IDS}" ]; then
+            IFS=',' read -ra ids <<< "${SESSION_IDS}"
+            for s in "${ids[@]}"; do
+              s="$(echo "$s" | xargs)"   # trim whitespace
+              [ -n "$s" ] && args="$args --session $s"
+            done
+          fi
+          echo "brain improve $args"
+          brain improve $args
+
+      # Diff the improved brain against the pre-improve baseline and capture the
+      # before/after eval report. ci_check writes ci_report.md (diff + evals) to
+      # the repo root; we reuse it verbatim as the PR body.
+      - name: Build diff + before/after report
+        if: steps.improve.outcome == 'success'
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: gemini
+          LLM_MODEL: gemini/gemini-2.5-flash
+          EMBEDDING_PROVIDER: fastembed
+          LLM_RATE_LIMIT_ENABLED: "true"
+          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_INTERVAL: "60"
+          CACHING: "false"
+          ENABLE_BACKEND_ACCESS_CONTROL: "false"
+        run: brain test
+
+      # Open (or update) the self-improvement PR. peter-evans/create-pull-request
+      # commits the new snapshot(s) under snapshots/ to a stable branch and
+      # raises a PR whose body is the diff + eval report. Re-running the same
+      # night updates the existing PR instead of stacking duplicates.
+      - name: Assemble PR body
+        if: steps.improve.outcome == 'success'
+        id: pr_body
+        run: |
+          {
+            echo "## 🌙 Nightly brain self-improvement"
+            echo ""
+            echo "\`cognee.improve()\` distilled recent sessions into the graph and cleared the eval gate "
+            echo "(evals were green before, green after — otherwise this PR would not exist)."
+            echo ""
+            echo "Merge to **deploy** the smarter brain; close to reject. The graph diff and "
+            echo "before/after eval scores are below."
+            echo ""
+            echo "---"
+            echo ""
+            if [ -f ci_report.md ]; then
+              cat ci_report.md
+            else
+              echo "_ci_report.md not found — see the workflow run logs for the diff + eval report._"
+            fi
+            echo ""
+            echo "<sub>Opened automatically by **SOBER** · brain-nightly. Behind a green eval gate; a human still approves the merge.</sub>"
+          } > pr_body.md
+          echo "path=pr_body.md" >> "$GITHUB_OUTPUT"
+
+      - name: Open self-improvement PR
+        if: steps.improve.outcome == 'success'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: brain/nightly-improve
+          # Only snapshots move — the graph store itself is not committed to git.
+          add-paths: |
+            snapshots/**
+          commit-message: "chore(brain): nightly self-improvement (gated by evals)"
+          title: "🌙 Nightly brain self-improvement"
+          body-path: pr_body.md
+          labels: |
+            brain
+            automated
+            self-improvement
+          delete-branch: true

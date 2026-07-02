@@ -1,0 +1,23 @@
+# must_know — knowledge the agent's brain MUST retain.
+#
+# Each case: recall(query) must CONTAIN expect_contains (case-insensitive).
+# These are drawn from the ops runbooks in knowledge/. If an improve() run or a
+# re-ingest silently drops one of these facts, memory CI goes red — this is the
+# regression half of SOBER's story.
+name: ops-runbooks-must-know
+kind: must_know
+cases:
+  - query: "what is the incident runbook for a db outage"
+    expect_contains: "failover to replica"
+
+  - query: "how do we recover from a cache incident under load"
+    expect_contains: "cache-warm"
+
+  - query: "how do I roll back a bad production deploy"
+    expect_contains: "shipit rollback"
+
+  - query: "how fast must on-call acknowledge a page"
+    expect_contains: "5 minutes"
+
+  - query: "which database does the orders service depend on"
+    expect_contains: "db-primary"
