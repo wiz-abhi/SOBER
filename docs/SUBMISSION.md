@@ -2,6 +2,8 @@
 
 Everything needed to finish and submit. Deadline: **July 5, 2026**.
 
+**Primary target: Best Open Source Use (MacBook).** SOBER is a self-hosted, MIT-licensed tool and that's its strongest, fully-proven story. The Cognee Cloud canary is an *optional stretch* (§4) — pursue it only if billing + time allow a genuine demo; a token `push()` would read as a bolt-on to the Cloud judges and is not worth doing half-way.
+
 ## One-liner (for the form)
 
 > **SOBER — CI/CD for Agent Brains.** Your agent's memory is production infrastructure with no tests, no diff, no rollback. SOBER wraps a Cognee knowledge graph in real CI/CD: forget-regression tests that prove a retracted secret stays gone, `git bisect` for a poisoned graph, and a nightly `improve()` that opens its own pull request behind a green eval gate.
@@ -37,8 +39,8 @@ Follow [DEMO_SCRIPT.md](DEMO_SCRIPT.md). **Pre-build the brain state before reco
 ### 3. Publish the blog (Best Blogs side track — Keychron)
 [BLOG.md](BLOG.md) is ready — add the repo link and post to dev.to / Hashnode, tag @wemakedevs + Cognee.
 
-### 4. Cloud track (Best Cognee Cloud Use — iPhone)
-Redeem the `COGNEE-35` code for a free Cloud dev plan, then `cognee.push(dataset="brain")` to sync the brain and screenshot the graph in the Cloud dashboard. Wire a "Sync to cloud" path and mention `push()`/`serve()` in the submission.
+### 4. (OPTIONAL STRETCH) Cloud track — Best Cognee Cloud Use — iPhone
+Only if billing + time allow a *real* demo, not a checkbox. Redeem `COGNEE-35` for a free Cloud dev plan, add a `brain deploy` step that runs `cognee.push(dataset="brain")` after a green `brain ci`, `serve()` a live endpoint, and screen-record the brain's graph in the Cloud dashboard — a genuine canary deploy. If you can't do it well before the deadline, **skip it and submit open-source only** — the entry is already strong and complete. Confirm on the form whether you pick one track or judges assign; if you must pick, choose Open Source.
 
 ### 5. Submit
 Confirm the submission portal in the **WeMakeDevs Discord** (not published on the rules page as of build time). Include: repo link, video link, blog link, and the **AI-assistance disclosure** (below) — omitting it is disqualification.

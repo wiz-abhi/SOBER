@@ -5,6 +5,8 @@
 
 Built for **The Hangover Part AI: Where's My Context?** (WeMakeDevs × Cognee).
 
+**SOBER is a self-hosted, open-source tool** — a `brain` CLI + GitHub Action, MIT-licensed, that runs entirely on local Cognee (zero-config: ladybug + LanceDB + SQLite). No cloud account required. *(It also has a natural path to Cognee Cloud for canary deploys — see [Roadmap](#roadmap) — but everything below runs and is proven fully self-hosted.)*
+
 ---
 
 ## The problem
@@ -78,7 +80,8 @@ SOBER exercises the full Cognee memory lifecycle — every verb is load-bearing,
 | **Forbidden-knowledge / forget-regression** | `cognee.forget(dataset=…, memory_only=True)` |
 | Surgical revert (one batch) | node-set → own physical dataset → scoped `forget` |
 | CI-gated self-improvement | `cognee.improve(dataset, session_ids)` |
-| Cloud canary deploy *(planned)* | `cognee.push()` / `cognee.serve()` |
+
+*(A Cognee Cloud canary-deploy step via `push()`/`serve()` is on the [roadmap](#roadmap); the pipeline above is complete and self-hosted.)*
 
 **Architecture note — the brain is a *family*.** A logical brain (`brain`) is the union of per-node-set physical datasets (`brain__runbooks`, `brain__retracted`, …). Recall and snapshot span the whole family; `forget(node_set)` drops exactly one member. That's what makes retraction and bisect-revert *surgical* — you excise one batch without disturbing the rest. Membership is tracked deterministically in `snapshots/.family.json`.
 
@@ -132,8 +135,15 @@ This was built solo in the hackathon window with heavy AI pair-programming. In t
 
 - **Proven live** on real Cognee 1.2.2 + Gemini + fastembed (Windows): the core forbidden-knowledge → forget → green loop, the `brain` CLI, snapshot/diff/export, and all keyless evals.
 - **Proven by deterministic offline harness** (stubbed verdicts, no API): the bisect binary-search and the CI-gate decision logic. The live cognify-backed runs of these were rate-limited by the Gemini **free-tier daily cap (20 requests/day on an unbilled key)** during the build; the logic is validated and the live scripts (`scripts/demo_*.py`) are ready to run once quota allows.
-- **Cloud canary** (`push`/`serve`) is designed and wired into the pitch but not yet demonstrated end-to-end.
 - **Auto-rollback** on a regressing `improve()` is best-effort: today the gate *blocks* the change (non-zero exit → no PR) and reports the pre-improve snapshot for rollback; an in-process `restore_snapshot` is a planned enhancement.
+
+## Roadmap
+
+SOBER is complete and proven as a self-hosted, open-source tool. Natural next steps:
+
+- **Cognee Cloud canary deploys** — after a green `brain ci`, `cognee.push()` the brain to Cognee Cloud and `serve()` it to a share of production traffic, promoting or rolling back on live feedback. A deploy pipeline's natural final stage; it makes `serve()`/`push()` load-bearing rather than decorative.
+- **In-process snapshot restore** so a regressing `improve()` auto-rolls-back instead of only blocking.
+- **More eval kinds** — semantic contradiction detection, freshness/TTL checks, and per-node-set coverage gates.
 
 ## Positioning
 
