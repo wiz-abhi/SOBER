@@ -287,24 +287,38 @@ async def improve(dataset: str = "brain", session_ids: Union[list[str], None] = 
     This COSTS Gemini calls, so it is only ever invoked behind the green eval
     gate in :func:`sober.ci.ci_gate_improve`.
 
-    ``dataset`` is a physical dataset name. ``session_ids`` may be ``None`` /
-    empty to let cognee pick recent sessions per its own default; otherwise the
-    listed sessions are distilled.
+    ``dataset`` is a LOGICAL brain name: improve spans its whole family (base +
+    every ``dataset__<node_set>`` member), mirroring :func:`recall` /
+    :func:`export_json`. This matters because real ingestion is always node-set
+    scoped (``ingest_batch`` → ``brain__core`` etc.), so the bare base dataset is
+    empty — improving only ``dataset`` would distill nothing into the graph that
+    actually holds the knowledge. ``session_ids`` may be ``None`` / empty to let
+    cognee pick recent sessions per its own default; otherwise the listed
+    sessions are distilled.
 
-    Returns ``{"dataset", "session_ids", "result"}`` where ``result`` is
-    cognee's raw ``improve`` return value.
+    Returns ``{"dataset", "session_ids", "result"}`` where ``result`` maps each
+    family member to cognee's raw ``improve`` return value.
     """
     ids = list(session_ids) if session_ids else []
-    if ids:
-        result = await cognee.improve(dataset=dataset, session_ids=ids)
-    else:
-        # No explicit sessions — let cognee apply its own recent-session default.
-        result = await cognee.improve(dataset=dataset)
+    results: dict = {}
+    for member in list_family(dataset):
+        try:
+            if ids:
+                results[member] = await cognee.improve(dataset=member, session_ids=ids)
+            else:
+                # No explicit sessions — let cognee apply its recent-session default.
+                results[member] = await cognee.improve(dataset=member)
+        except Exception as exc:
+            # An empty/absent family member (e.g. the bare base) has nothing to
+            # distill; skip it rather than failing the whole improve.
+            if "NoDataError" in type(exc).__name__ or "No data found" in str(exc):
+                continue
+            raise
 
     return {
         "dataset": dataset,
         "session_ids": ids,
-        "result": result,
+        "result": results,
     }
 
 

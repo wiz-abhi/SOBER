@@ -145,6 +145,21 @@ async def bisect(
 
     spec = await _load_failing_spec(failing_eval)
 
+    # Bisect localizes the batch that INTRODUCED a problem, which is inherently a
+    # `forbidden` concept: a leak/poison present in the culprit batch stays present
+    # in every larger prefix (monotonic red), so per-batch prefix probing is sound.
+    # `must_know` regressions are not caused by adding a batch (an absent fact makes
+    # small prefixes red and large ones green — the opposite direction, so the
+    # binary search would return a spurious batch), and `structure` evals assert over
+    # the whole merged graph and cannot be localized per batch. Reject both loudly.
+    kind = getattr(spec, "kind", None)
+    if kind != "forbidden":
+        raise ValueError(
+            f"bisect only supports 'forbidden' evals (they localize a leak/poison "
+            f"monotonically); {failing_eval!r} is kind {kind!r}, which cannot be "
+            f"bisected over ingestion batches."
+        )
+
     # Sanity probe: is the eval actually red once everything is present?
     probes += 1
     full_red = await _prefix_is_red(spec, batch_datasets)

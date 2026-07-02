@@ -22,6 +22,7 @@ Entry point: ``brain = "sober.cli:app"`` (declared in pyproject.toml).
 from __future__ import annotations
 
 import asyncio
+import json
 from typing import List, Optional
 
 import typer
@@ -514,36 +515,28 @@ def _parse_version(value: str) -> int:
 def _discover_batch_datasets(dataset: str) -> List[str]:
     """Discover ordered per-batch physical datasets for ``dataset``.
 
-    Convention (CONTRACT.md): each ingestion batch lives in its own physical
-    dataset named ``f"{dataset}__{node_set}"``. We enumerate the snapshot
-    sidecars on disk to find them in a stable, deterministic order.
+    Each ingestion batch lives in its own physical dataset named
+    ``f"{dataset}__{node_set}"`` and is recorded — in ingestion order — in the
+    family registry ``snapshots/.family.json`` (written by ``brain.ingest`` /
+    ``ingest_batch``). Per-batch datasets do NOT get their own snapshot files
+    (only the logical dataset is snapshotted), so the registry, not the
+    ``snapshots/`` listing, is the authoritative source.
 
-    This is cognee-free: it only reads the ``snapshots/`` directory listing.
+    Cognee-free: reads only the registry JSON. Returns the ``dataset__*`` members
+    (excluding the bare base dataset, which is not a revertable batch).
     """
     from sober import config
 
-    prefix = f"{dataset}__"
-    seen: dict[str, None] = {}
-    snap_dir = config.SNAP_DIR
-    if not snap_dir.exists():
+    sep = "__"
+    reg_path = config.SNAP_DIR / ".family.json"
+    if not reg_path.exists():
         return []
-    # Sorted for a deterministic ingestion-order approximation.
-    for path in sorted(snap_dir.glob(f"{prefix}*")):
-        stem = path.name
-        # Strip snapshot suffixes: "brain__foo_v1.json" / ".meta.json".
-        for marker in (".meta.json", ".json"):
-            if stem.endswith(marker):
-                stem = stem[: -len(marker)]
-                break
-        # Strip the trailing "_v{N}" version tag if present.
-        base = stem
-        if "_v" in stem:
-            head, _, tail = stem.rpartition("_v")
-            if tail.isdigit():
-                base = head
-        if base.startswith(prefix) and base not in seen:
-            seen[base] = None
-    return list(seen.keys())
+    try:
+        reg = json.loads(reg_path.read_text(encoding="utf-8"))
+    except (ValueError, OSError):
+        return []
+    members = reg.get(dataset, []) if isinstance(reg, dict) else []
+    return [m for m in members if sep in m]
 
 
 def _render_diff_table(result: dict, title: str) -> None:

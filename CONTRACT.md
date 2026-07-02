@@ -127,12 +127,14 @@ UUID5 derived from content) OR `name`+`type` for entities.
 ### `sober/cli.py` — Typer app, entry point `brain`
 Commands (thin — delegate to the modules above; each wraps async with `asyncio.run`):
 - `brain ingest <path-or-text> [--dataset brain] [--node-set NAME]`
+- `brain build [--dataset brain] [--include SUBDIR] [--reset/--no-reset]`  (rebuild brain from knowledge/ corpus + snapshot)
 - `brain snapshot [--dataset brain] [--label TEXT]`
 - `brain diff [--dataset brain] [--from vN] [--to vM]`  (defaults: previous vs latest)
 - `brain test [--dataset brain]`  → runs evals, red/green exit code
+- `brain ci [--dataset brain]`  → snapshot → diff → evals → write ci_report.md → exit 0/1 (the PR gate)
 - `brain revert <culprit-dataset>`
-- `brain bisect --failing-eval NAME`
-- `brain improve --session S1 [--session S2]`  (CI-gated)
+- `brain bisect --failing-eval NAME`  (NAME must be a `forbidden`-kind eval)
+- `brain improve --session S1 [--session S2]`  (CI-gated; spans the whole family)
 - `brain reset`
 Use `rich` for pretty tables. Every command prints a clear human summary.
 

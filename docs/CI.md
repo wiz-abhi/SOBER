@@ -142,7 +142,7 @@ is the Gemini key:
 | Env var | Source | Purpose |
 | --- | --- | --- |
 | `LLM_API_KEY` | **`${{ secrets.LLM_API_KEY }}`** (repo secret) | Gemini API key — never commit it |
-| `LLM_PROVIDER` / `LLM_MODEL` | workflow literal (`gemini` / `gemini/gemini-2.5-flash`) | model selection |
+| `LLM_PROVIDER` / `LLM_MODEL` | workflow literal (`gemini` / `gemini/gemini-2.5-flash-lite`) | model selection |
 | `EMBEDDING_PROVIDER` | workflow literal (`fastembed`) | local embeddings, no key, no rate limit |
 | `LLM_RATE_LIMIT_*` | workflow literals | free-tier 429 protection |
 | `CACHING` / `ENABLE_BACKEND_ACCESS_CONTROL` | workflow literals (`false`) | deterministic, no background access (per SOBER contract) |

@@ -10,5 +10,11 @@ dist/
 build/
 *.egg-info/
 .pytest_cache/
+# Ignore ad-hoc/local exports, but KEEP versioned snapshot artifacts tracked so
+# the nightly self-improvement PR (brain-nightly.yml) can actually commit the
+# before/after graph snapshots it diffs. .family.json stays ignored (local store
+# bookkeeping, not a PR artifact).
 snapshots/*.json
 !snapshots/.gitkeep
+!snapshots/*_v*.json
+!snapshots/*_v*.meta.json
