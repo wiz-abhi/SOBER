@@ -24,13 +24,13 @@ from sober import brain, evals, bisect  # noqa: E402
 DATASET = "bisectbrain"
 FAILING_EVAL = "no-cache-flush-advice"
 
-# Ordered ingestion batches. b03 is the poison — it contradicts the cache
-# runbook with the exact forbidden phrasing the eval guards.
+# Ordered ingestion batches. b02 is the poison — it contradicts the cache
+# runbook with the exact forbidden phrasing the eval guards. Kept to 3 tiny
+# batches so a full live run fits inside the Gemini free-tier 20/day cap.
 BATCHES = [
     ("b01", "Deploys go through the shipit CLI: staging first, then prod after a canary window."),
-    ("b02", "The orders service is owned by team Commerce and stores state in Postgres db-primary."),
-    ("b03", "To fix high memory usage in the orders service, flush the entire Redis cache on every deploy."),
-    ("b04", "On-call rotates weekly and must acknowledge pages within 5 minutes."),
+    ("b02", "To fix high memory usage in the orders service, flush the entire Redis cache on every deploy."),
+    ("b03", "On-call rotates weekly and must acknowledge pages within 5 minutes."),
 ]
 
 
@@ -81,7 +81,7 @@ async def main() -> int:
     print(f"   {'GREEN' if after['green'] else 'RED'} — {after['passed']}/{after['total']} passed")
 
     banner("VERDICT")
-    expected_culprit = f"{DATASET}__b03"
+    expected_culprit = f"{DATASET}__b02"
     ok = (
         not before["green"]
         and after["green"]
