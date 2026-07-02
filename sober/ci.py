@@ -191,10 +191,10 @@ async def ci_gate_improve(dataset: str, session_ids: list[str]) -> int:
         _print("[green]improve() gate: PASS — improve accepted, suite still green.[/green]")
         return 0
 
-    # improve made it red → revert & fail
+    # improve made it red → block the change & fail (no PR is opened upstream).
     _print(
         "[red]improve() gate: FAIL — improve regressed the eval suite. "
-        "Reverting.[/red]"
+        "Blocking the change (non-zero exit → no PR).[/red]"
     )
     restore = getattr(brain, "restore_snapshot", None)
     if callable(restore):

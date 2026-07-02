@@ -79,16 +79,25 @@ jobs:
           # Model + embedding config mirrors .env.example so CI matches local.
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_PROVIDER: gemini
-          LLM_MODEL: gemini/gemini-2.5-flash
+          # flash-lite has the most generous free tier; graph quality is plenty
+          # for runbook-shaped docs (SOBER's value is CI behavior, not depth).
+          LLM_MODEL: gemini/gemini-2.5-flash-lite
           EMBEDDING_PROVIDER: fastembed
-          # Free-tier protection: throttle so a burst of 429s never kills a run.
+          # Free-tier protection: keep under 15 RPM so cognify bursts don't 429.
           LLM_RATE_LIMIT_ENABLED: "true"
-          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_REQUESTS: "6"
           LLM_RATE_LIMIT_INTERVAL: "60"
           # SOBER conventions from the contract — deterministic, no bg access.
           CACHING: "false"
           ENABLE_BACKEND_ACCESS_CONTROL: "false"
-        run: brain test
+        # The cognee graph store is gitignored, so CI reconstructs the brain from
+        # source first (`brain build` ingests knowledge/*.md — memory rebuilt from
+        # version control), then runs the gate. `brain ci` snapshots, diffs vs the
+        # build snapshot, runs every eval, writes ci_report.md, and exits 1 on red
+        # (a forbidden-knowledge leak, a lost must-know fact, or a structure break).
+        run: |
+          brain build
+          brain ci
 
       # Always upload the generated report so it's downloadable from the run,
       # even when `brain test` fails (that's exactly when a human wants to read

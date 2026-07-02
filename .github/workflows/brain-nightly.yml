@@ -63,20 +63,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .
 
-      # Baseline: snapshot the current brain and record BEFORE eval scores so the
-      # PR body can show a real before/after and the diff has a "from" side.
-      - name: Snapshot brain (pre-improve baseline)
+      # Reconstruct the brain from source (the cognee store is gitignored), then
+      # snapshot it as the pre-improve baseline so the PR body has a real
+      # before/after and the diff has a "from" side.
+      - name: Build brain + snapshot (pre-improve baseline)
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_PROVIDER: gemini
-          LLM_MODEL: gemini/gemini-2.5-flash
+          LLM_MODEL: gemini/gemini-2.5-flash-lite
           EMBEDDING_PROVIDER: fastembed
           LLM_RATE_LIMIT_ENABLED: "true"
-          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_REQUESTS: "6"
           LLM_RATE_LIMIT_INTERVAL: "60"
           CACHING: "false"
           ENABLE_BACKEND_ACCESS_CONTROL: "false"
-        run: brain snapshot --label nightly-pre-improve
+        run: |
+          brain build
+          brain snapshot --label nightly-pre-improve
 
       # The gated self-improvement step. `brain improve` delegates to
       # sober.ci.ci_gate_improve, which:
@@ -92,10 +95,10 @@ jobs:
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_PROVIDER: gemini
-          LLM_MODEL: gemini/gemini-2.5-flash
+          LLM_MODEL: gemini/gemini-2.5-flash-lite
           EMBEDDING_PROVIDER: fastembed
           LLM_RATE_LIMIT_ENABLED: "true"
-          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_REQUESTS: "6"
           LLM_RATE_LIMIT_INTERVAL: "60"
           CACHING: "false"
           ENABLE_BACKEND_ACCESS_CONTROL: "false"
@@ -115,21 +118,22 @@ jobs:
           brain improve $args
 
       # Diff the improved brain against the pre-improve baseline and capture the
-      # before/after eval report. ci_check writes ci_report.md (diff + evals) to
-      # the repo root; we reuse it verbatim as the PR body.
+      # before/after eval report. `brain ci` (ci_check) snapshots, diffs vs the
+      # previous snapshot, runs evals, and writes ci_report.md to the repo root;
+      # we reuse it verbatim as the PR body.
       - name: Build diff + before/after report
         if: steps.improve.outcome == 'success'
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_PROVIDER: gemini
-          LLM_MODEL: gemini/gemini-2.5-flash
+          LLM_MODEL: gemini/gemini-2.5-flash-lite
           EMBEDDING_PROVIDER: fastembed
           LLM_RATE_LIMIT_ENABLED: "true"
-          LLM_RATE_LIMIT_REQUESTS: "8"
+          LLM_RATE_LIMIT_REQUESTS: "6"
           LLM_RATE_LIMIT_INTERVAL: "60"
           CACHING: "false"
           ENABLE_BACKEND_ACCESS_CONTROL: "false"
-        run: brain test
+        run: brain ci
 
       # Open (or update) the self-improvement PR. peter-evans/create-pull-request
       # commits the new snapshot(s) under snapshots/ to a stable branch and

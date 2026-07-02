@@ -383,6 +383,89 @@ def improve(
 
 
 @app.command()
+def build(
+    dataset: str = _DATASET_OPT,
+    include: Optional[List[str]] = typer.Option(
+        None,
+        "--include",
+        help="Also ingest a knowledge/ subdirectory as its own node_set "
+        "(e.g. --include poisoned). Repeatable. Default: healthy top-level docs only.",
+    ),
+    reset_first: bool = typer.Option(
+        True,
+        "--reset/--no-reset",
+        help="Prune the brain before building (default) so CI is reproducible.",
+    ),
+) -> None:
+    """Build the brain from the ``knowledge/`` corpus, then snapshot it.
+
+    Ingests every top-level ``knowledge/*.md`` as the healthy ``core`` batch
+    (one cognify), plus any ``--include``d subdirectory as its own node_set so
+    regression fixtures (retracted/poisoned) can be added on demand. Ends with a
+    snapshot so ``brain ci`` / structure evals have a graph to check.
+
+    This is what CI runs to reconstruct the brain from source before testing —
+    memory rebuilt from version control, exactly like app code. Calls the live
+    Cognee/LLM pipeline (cognify).
+    """
+    from sober import brain, config, snapshot as snap
+
+    config.load_env()
+
+    kdir = config.KNOWLEDGE_DIR
+    core_docs = sorted(str(p) for p in kdir.glob("*.md") if p.name.lower() != "readme.md")
+    if not core_docs:
+        _die(f"no top-level *.md docs found under {kdir}")
+
+    if reset_first:
+        with console.status("[bold]resetting brain…", spinner="dots"):
+            asyncio.run(brain.reset())
+
+    async def _build() -> dict:
+        summary: dict = {}
+        r = await brain.ingest_batch(core_docs, dataset=dataset, node_set="core")
+        summary["core"] = f"{r['count']} docs → {r['dataset']}"
+        for sub in include or []:
+            subdir = kdir / sub
+            docs = sorted(str(p) for p in subdir.glob("*.md") if p.name.lower() != "readme.md")
+            if not docs:
+                summary[sub] = "no docs (skipped)"
+                continue
+            rr = await brain.ingest_batch(docs, dataset=dataset, node_set=sub)
+            summary[sub] = f"{rr['count']} docs → {rr['dataset']}"
+        await snap.take_snapshot(dataset, label="build")
+        return summary
+
+    with console.status(f"[bold]building '{dataset}' from knowledge/…", spinner="dots"):
+        summary = asyncio.run(_build())
+
+    console.print(_kv_table("built", summary))
+    version = snap.latest_version(dataset)
+    console.print(f"[green]✓[/green] brain built and snapshotted [bold]v{version}[/bold]")
+
+
+@app.command()
+def ci(
+    dataset: str = _DATASET_OPT,
+) -> None:
+    """The PR gate: snapshot → diff → evals → write ci_report.md, exit 0/1.
+
+    Wraps ``ci.ci_check``. Unlike ``brain test`` (a quick red/green check), this
+    also versions a snapshot, diffs it against the previous one, and writes
+    ``ci_report.md`` at the repo root for the GitHub Action to post on the PR.
+    """
+    from sober import ci as cimod
+    from sober import config
+
+    config.load_env()
+
+    with console.status(f"[bold]running CI gate on '{dataset}'…", spinner="dots"):
+        code = asyncio.run(cimod.ci_check(dataset))
+
+    raise typer.Exit(code)
+
+
+@app.command()
 def reset(
     yes: bool = typer.Option(
         False,

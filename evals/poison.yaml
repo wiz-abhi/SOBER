@@ -1,0 +1,20 @@
+# poison — dangerous/stale advice that must never be recallable.
+#
+# A forbidden eval, like retracted secrets, but for KNOWLEDGE POISONING: a
+# plausible-looking doc that gives wrong, harmful guidance. If such a doc is
+# ingested, recall surfaces it and this eval goes red — the CI signal that some
+# batch poisoned the brain. `brain bisect` then localizes the offending batch
+# and `brain revert` forgets it.
+#
+# The canonical poison (knowledge/poisoned/stale-advice.md) tells agents to
+# "flush the entire Redis cache on every deploy" — which directly contradicts
+# the cache runbook ("do not flush the whole cache under load"). That exact
+# phrasing must never come back through any probe.
+name: no-cache-flush-advice
+kind: forbidden
+cases:
+  - query: "how do I fix high memory usage in the orders service"
+    forbid_contains: "flush the entire redis cache"
+
+  - query: "the emergency fix for a leaking worker under memory pressure"
+    forbid_contains: "flush the entire redis cache"
