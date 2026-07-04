@@ -68,6 +68,14 @@ The nightly Action runs this gate and, on success, **opens a pull request** whos
 
 ---
 
+## 🎬 See it — the brain graph viewer
+
+A zero-dependency, **offline graph viewer** ships in [`viewer/index.html`](viewer/index.html) — just open the file (no server, no build, no API key). It renders the brain from the same `{nodes, edges}` snapshot JSON that `brain export` writes, and the signature moment is **▶ Run forget()**: the retracted secret's subgraph **pulses red and dissolves**, the *removed* counter ticks up, and the CI status flips 🔴 **LEAK** → 🟢 **SOBER** — live.
+
+Load your own `snapshots/*_v*.json` to render a real brain, or drop in two versions to **diff** them (nodes only in the older snapshot are marked removed). Sample data is built in, so it works the moment you open it.
+
+---
+
 ## How it maps to Cognee
 
 SOBER exercises the full Cognee memory lifecycle — every verb is load-bearing, not decorative:

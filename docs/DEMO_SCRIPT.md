@@ -43,6 +43,8 @@ brain diff --dataset brain
 ```
 → **🔴 16 nodes / 32 edges removed.** **"That's the retracted subgraph, and nothing else. A forget-regression test — a guarantee no other memory tool ships."**
 
+**The money shot (cut to the graph viewer, `viewer/index.html`):** with the leaked-secret graph on screen, hit **▶ Run forget()** — the secret's subgraph **pulses red and dissolves**, the removed counter ticks up, and the status pill flips 🔴 **LEAK → 🟢 SOBER** live. **"You just watched an AI forget — provably, on command."** *(This is the single most legible 5 seconds in the whole demo; lead your thumbnail with it.)*
+
 ---
 
 ## Act 2 — Bisect a poisoned brain (0:50–1:25)

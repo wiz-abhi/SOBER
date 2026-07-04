@@ -1,0 +1,430 @@
+<title>SOBER · Brain Graph Viewer</title>
+<style>
+  :root{
+    --ground:#0e1116; --panel:#161b22cc; --panel-solid:#161b22; --panel-2:#1c222c;
+    --line:#2a313c; --ink:#e8ebf2; --muted:#8a93a3;
+    --accent:#e8a13a; --accent-dim:#7a5a1f;
+    --pass:#3fb950; --fail:#f0503c;
+    --doc:#5b8def; --chunk:#7d8799; --entity:#e8a13a; --etype:#b07de0; --summary:#3fb1a8;
+    --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:var(--sans); overflow:hidden;
+    background-image:radial-gradient(1200px 600px at 78% -10%, #1a2130 0%, transparent 60%);
+  }
+  #graph{position:fixed; top:0; left:0; width:100vw; height:100vh; display:block; touch-action:none}
+
+  /* top status bar */
+  .bar{
+    position:fixed; top:0; left:0; right:0; height:56px; z-index:5;
+    display:flex; align-items:center; gap:20px; padding:0 20px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(#0e1116ee,#0e1116aa); backdrop-filter:blur(8px);
+  }
+  .brand{font-family:var(--mono); font-weight:700; letter-spacing:.5px; font-size:15px; display:flex; align-items:center; gap:9px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  .brand small{color:var(--muted); font-weight:400; letter-spacing:0}
+  .metrics{margin-left:auto; display:flex; align-items:center; gap:10px; font-family:var(--mono)}
+  .pill{
+    display:inline-flex; align-items:center; gap:7px; padding:5px 11px; border-radius:999px;
+    border:1px solid var(--line); background:var(--panel-2); font-size:12.5px;
+    font-variant-numeric:tabular-nums;
+  }
+  .pill b{font-weight:700}
+  .pill .k{color:var(--muted); font-weight:400}
+  .pill.state{transition:all .35s ease}
+  .pill.state[data-state="pass"]{border-color:#255c33; background:#12241a; color:var(--pass)}
+  .pill.state[data-state="fail"]{border-color:#5c2a24; background:#241413; color:var(--fail)}
+  .pill .led{width:8px;height:8px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+  .del{color:var(--fail)}
+
+  /* control rail */
+  .rail{
+    position:fixed; left:20px; bottom:20px; z-index:5; width:270px;
+    background:var(--panel); backdrop-filter:blur(10px);
+    border:1px solid var(--line); border-radius:14px; padding:14px;
+    box-shadow:0 18px 50px #00000066;
+  }
+  .rail h2{font:600 11px/1 var(--mono); letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin:2px 0 11px}
+  .btns{display:flex; flex-direction:column; gap:7px}
+  button.b{
+    appearance:none; text-align:left; cursor:pointer; color:var(--ink);
+    font-family:var(--sans); font-size:13.5px; padding:9px 11px; border-radius:9px;
+    border:1px solid var(--line); background:var(--panel-2); transition:.15s;
+    display:flex; align-items:center; gap:9px;
+  }
+  button.b:hover{border-color:#3a4557; background:#222a36}
+  button.b[aria-pressed="true"]{border-color:var(--accent-dim); background:#241d10; color:#ffd68a}
+  button.b .ic{width:16px; text-align:center; opacity:.85}
+  button.b.go{border-color:var(--accent-dim); background:linear-gradient(#2a2110,#211a0c); color:#ffcf7a; font-family:var(--mono); font-weight:600}
+  button.b.go:hover{background:linear-gradient(#342811,#271f0e)}
+  button.b.go:disabled{opacity:.45; cursor:default}
+  .sep{height:1px; background:var(--line); margin:12px 0}
+  .loaders{display:flex; flex-direction:column; gap:7px}
+  label.file{
+    display:flex; align-items:center; gap:9px; cursor:pointer;
+    font:12.5px var(--sans); color:var(--muted); padding:8px 11px;
+    border:1px dashed var(--line); border-radius:9px; transition:.15s;
+  }
+  label.file:hover{border-color:#3a4557; color:var(--ink)}
+  label.file input{display:none}
+  .note{margin-top:10px; font:11px/1.5 var(--sans); color:var(--muted)}
+  .note code{font-family:var(--mono); color:#b9c1d1}
+
+  /* legend */
+  .legend{
+    position:fixed; right:20px; bottom:20px; z-index:5;
+    background:var(--panel); backdrop-filter:blur(10px);
+    border:1px solid var(--line); border-radius:14px; padding:12px 14px;
+    box-shadow:0 18px 50px #00000066; font-size:12px;
+  }
+  .legend h2{font:600 11px/1 var(--mono); letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin:0 0 9px}
+  .legend .row{display:flex; align-items:center; gap:8px; margin:5px 0; color:#c7cdd9}
+  .legend .sw{width:11px;height:11px;border-radius:50%}
+  .legend .sw.ring{background:transparent; border:2px solid var(--fail); box-shadow:0 0 7px var(--fail)}
+
+  /* tooltip */
+  #tip{
+    position:fixed; z-index:9; pointer-events:none; max-width:280px; display:none;
+    background:#0b0e13f2; border:1px solid var(--line); border-radius:10px; padding:9px 11px;
+    box-shadow:0 10px 30px #000a; transform:translate(-50%,-115%);
+  }
+  #tip .t{font:600 11px/1 var(--mono); letter-spacing:.5px; text-transform:uppercase; margin-bottom:5px}
+  #tip .x{font:13px/1.4 var(--sans); color:#d3d8e2}
+  #tip.removing .t{color:var(--fail)}
+
+  /* forget banner */
+  #flash{
+    position:fixed; top:70px; left:50%; transform:translateX(-50%) translateY(-8px);
+    z-index:6; font-family:var(--mono); font-size:13px; padding:8px 15px; border-radius:10px;
+    background:#241413; border:1px solid #5c2a24; color:#ff9a8a; opacity:0; transition:.4s;
+  }
+  #flash.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:640px){
+    .legend{display:none} .rail{left:12px; right:12px; bottom:12px; width:auto}
+    .metrics .k{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ .pill.state,#flash{transition:none} }
+</style>
+<canvas id="graph"></canvas>
+
+<div class="bar">
+  <div class="brand"><span class="dot"></span>SOBER <small>· brain graph viewer</small></div>
+  <div class="metrics">
+    <span class="pill"><span class="k">nodes</span><b id="mNodes">0</b></span>
+    <span class="pill"><span class="k">edges</span><b id="mEdges">0</b></span>
+    <span class="pill" id="mDiff" style="display:none"><span class="k">removed</span><b class="del" id="mDel">0</b></span>
+    <span class="pill state" id="mState" data-state="fail"><span class="led"></span><b id="mStateT">LEAK</b></span>
+  </div>
+</div>
+
+<div id="flash"></div>
+
+<div class="rail">
+  <h2>Scenario</h2>
+  <div class="btns">
+    <button class="b" id="sLeak" aria-pressed="true"><span class="ic">🔴</span>Brain with leaked secret</button>
+    <button class="b" id="sHealthy"><span class="ic">🟢</span>Healthy brain</button>
+    <button class="b go" id="sForget"><span class="ic">▶</span>Run forget() &nbsp;<span style="color:#8a93a3;font-weight:400">retract the secret</span></button>
+  </div>
+  <div class="sep"></div>
+  <h2>Your data</h2>
+  <div class="loaders">
+    <label class="file">📥 Load a snapshot&nbsp;<code>_vN.json</code>
+      <input type="file" id="fOne" accept=".json,application/json" />
+    </label>
+    <label class="file">🔀 Compare two snapshots (diff)
+      <input type="file" id="fTwo" accept=".json,application/json" multiple />
+    </label>
+  </div>
+  <p class="note">Showing <b style="color:#b9c1d1">sample data</b>. Point it at real files from your
+    <code>snapshots/</code> dir — the same <code>{nodes,edges}</code> JSON <code>brain export</code> writes.</p>
+</div>
+
+<div class="legend">
+  <h2>Legend</h2>
+  <div class="row"><span class="sw" style="background:var(--doc)"></span>Document</div>
+  <div class="row"><span class="sw" style="background:var(--chunk)"></span>Chunk</div>
+  <div class="row"><span class="sw" style="background:var(--entity)"></span>Entity</div>
+  <div class="row"><span class="sw" style="background:var(--etype)"></span>Type</div>
+  <div class="row"><span class="sw" style="background:var(--summary)"></span>Summary</div>
+  <div class="row"><span class="sw ring"></span>Removed by forget()</div>
+</div>
+
+<div id="tip"><div class="t"></div><div class="x"></div></div>
+
+<script>
+"use strict";
+(function(){
+  const CT = { TextDocument:"--doc", DocumentChunk:"--chunk", Entity:"--entity", EntityType:"--etype", TextSummary:"--summary" };
+  const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+  const RADIUS = { TextDocument:11, DocumentChunk:8, Entity:9, EntityType:8, TextSummary:8 };
+
+  // ---- sample data: SOBER's own corpus ----------------------------------
+  // Healthy runbook brain; the "retracted" cluster is the leaked launch code.
+  const HEALTHY_NODES = [
+    ["doc_db","DB Outage Runbook","TextDocument","Failover to replica; promote db-replica-1."],
+    ["doc_cache","Cache Runbook","TextDocument","Warm critical keys; never flush under load."],
+    ["doc_deploy","Deploy Runbook","TextDocument","Blue/green via shipit; instant rollback."],
+    ["doc_oncall","On-Call Guide","TextDocument","Acknowledge pages within 5 minutes."],
+    ["doc_map","Service Map","TextDocument","orders → Postgres db-primary + Redis."],
+    ["ch_db","chunk: failover","DocumentChunk","Promote db-replica-1 with pg_ctl promote."],
+    ["ch_cache","chunk: cache-warm","DocumentChunk","cache-warm --top 500, then evict stale."],
+    ["ch_deploy","chunk: rollback","DocumentChunk","shipit rollback --env prod is instant."],
+    ["ch_oncall","chunk: SLA","DocumentChunk","Ack within 5 minutes; escalate to secondary."],
+    ["e_primary","db-primary","Entity","Primary Postgres for the orders service."],
+    ["e_replica","db-replica-1","Entity","Standby promoted during a DB outage."],
+    ["e_redis","Redis","Entity","Look-aside cache in front of Postgres."],
+    ["e_shipit","shipit","Entity","Blue/green deploy CLI."],
+    ["e_orders","orders","Entity","Checkout / order-state service."],
+    ["e_pager","PagerDuty","Entity","On-call paging schedule."],
+    ["t_svc","Service","EntityType",""],
+    ["t_tool","Tool","EntityType",""],
+    ["sum_ops","summary: operations","TextSummary","How the team runs incidents, deploys, on-call."],
+  ];
+  const HEALTHY_EDGES = [
+    ["doc_db","ch_db","contains"],["doc_cache","ch_cache","contains"],["doc_deploy","ch_deploy","contains"],
+    ["doc_oncall","ch_oncall","contains"],
+    ["ch_db","e_replica","mentions"],["ch_db","e_primary","mentions"],
+    ["ch_cache","e_redis","mentions"],["ch_deploy","e_shipit","mentions"],
+    ["ch_oncall","e_pager","mentions"],
+    ["doc_map","e_orders","mentions"],["doc_map","e_primary","mentions"],["doc_map","e_redis","mentions"],
+    ["e_orders","e_primary","depends_on"],["e_orders","e_redis","depends_on"],
+    ["e_primary","t_svc","is_a"],["e_replica","t_svc","is_a"],["e_redis","t_svc","is_a"],
+    ["e_shipit","t_tool","is_a"],["e_pager","t_tool","is_a"],
+    ["sum_ops","doc_db","summarizes"],["sum_ops","doc_deploy","summarizes"],["sum_ops","doc_oncall","summarizes"],
+  ];
+  // the retracted subgraph (present only in the "leaked" state)
+  const SECRET_NODES = [
+    ["doc_key","Launch Key (RETRACTED)","TextDocument","Emergency production launch code doc."],
+    ["ch_key","chunk: launch code","DocumentChunk","The emergency launch code is BRAVO-DELTA-9917."],
+    ["e_code","BRAVO-DELTA-9917","Entity","Launch code that bypasses the canary window."],
+    ["e_arm","arm-release","Entity","Action the code authorizes."],
+    ["e_pipe","release pipeline","Entity","System the code unlocks."],
+    ["sum_key","summary: launch auth","TextSummary","Emergency bypass of the approval flow."],
+  ];
+  const SECRET_EDGES = [
+    ["doc_key","ch_key","contains"],["ch_key","e_code","mentions"],
+    ["e_code","e_arm","authorizes"],["e_arm","e_pipe","targets"],
+    ["e_code","e_pipe","unlocks"],["sum_key","doc_key","summarizes"],
+    ["ch_key","e_pipe","mentions"],["e_code","e_orders","affects"],
+  ];
+  const SECRET_IDS = new Set(SECRET_NODES.map(n=>n[0]));
+
+  const mk = (arr)=>arr.map(([id,name,type,text])=>({id,name,type,text}));
+  const mkE = (arr)=>arr.map(([source,target,relationship_name])=>({source,target,relationship_name}));
+
+  function buildGraph(withSecret){
+    const nodes = mk(HEALTHY_NODES).concat(withSecret?mk(SECRET_NODES):[]);
+    const edges = mkE(HEALTHY_EDGES).concat(withSecret?mkE(SECRET_EDGES):[]);
+    return {nodes,edges};
+  }
+
+  // ---- rendering / physics ---------------------------------------------
+  const cv = document.getElementById("graph"), ctx = cv.getContext("2d");
+  let W=0,H=0,DPR=1;
+  function resize(){ DPR=Math.min(2,window.devicePixelRatio||1);
+    W=cv.clientWidth||innerWidth||1200; H=cv.clientHeight||innerHeight||800;
+    cv.width=Math.max(1,Math.round(W*DPR)); cv.height=Math.max(1,Math.round(H*DPR));
+    ctx.setTransform(DPR,0,0,DPR,0,0); }
+  addEventListener("resize",resize); addEventListener("load",resize);
+  // A canvas is 300x150 until it has layout; observe so it sizes the moment it does.
+  if(window.ResizeObserver){ try{ new ResizeObserver(resize).observe(cv); }catch(e){} }
+  resize();
+
+  const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
+  let N=[], E=[], byId=new Map();
+  let hover=null, drag=null;
+
+  function setData(g, keepPos){
+    const old = keepPos ? byId : new Map();
+    byId = new Map();
+    N = g.nodes.map((n,i)=>{
+      const p = old.get(n.id);
+      const a = (i/g.nodes.length)*Math.PI*2;
+      return { ...n, x:p?p.x:W/2+Math.cos(a)*160+(Math.random()*40-20),
+               y:p?p.y:H/2+Math.sin(a)*160+(Math.random()*40-20),
+               vx:0,vy:0, r:RADIUS[n.type]||8, alpha:1, removing:0, pulse:0 };
+    });
+    N.forEach(n=>byId.set(n.id,n));
+    E = g.edges.filter(e=>byId.has(e.source)&&byId.has(e.target))
+               .map(e=>({...e, alpha:1}));
+    updateMetrics();
+  }
+
+  function physics(){
+    const rep=5200, spring=0.02, len=64, grav=0.015, damp=0.86;
+    for(let i=0;i<N.length;i++){
+      const a=N[i]; if(a.alpha<=0) continue;
+      for(let j=i+1;j<N.length;j++){
+        const b=N[j]; if(b.alpha<=0) continue;
+        let dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy||1; if(d2>90000) continue;
+        const f=rep/d2, d=Math.sqrt(d2); dx/=d; dy/=d;
+        a.vx+=dx*f/60; a.vy+=dy*f/60; b.vx-=dx*f/60; b.vy-=dy*f/60;
+      }
+      a.vx += (W/2-a.x)*grav/60*4; a.vy += (H/2-a.y)*grav/60*4;
+    }
+    for(const e of E){
+      const a=byId.get(e.source), b=byId.get(e.target); if(!a||!b) continue;
+      let dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy)||1; const f=(d-len)*spring;
+      dx/=d; dy/=d; a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f;
+    }
+    for(const n of N){
+      if(drag===n){ continue; }
+      n.vx*=damp; n.vy*=damp; n.x+=n.vx; n.y+=n.vy;
+      n.x=Math.max(40,Math.min(W-40,n.x)); n.y=Math.max(72,Math.min(H-40,n.y));
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // edges
+    for(const e of E){
+      const a=byId.get(e.source), b=byId.get(e.target); if(!a||!b) continue;
+      const al=Math.min(a.alpha,b.alpha,e.alpha); if(al<=0) continue;
+      const removing = a.removing||b.removing;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle = removing ? `rgba(240,80,60,${0.55*al})` : `rgba(120,132,153,${0.22*al})`;
+      ctx.lineWidth = removing?1.6:1; ctx.stroke();
+    }
+    // nodes
+    for(const n of N){
+      if(n.alpha<=0) continue;
+      const base = css(CT[n.type]||"--chunk");
+      const R = n.r*(1+(n.pulse*0.5));
+      if(n.removing){
+        ctx.beginPath(); ctx.arc(n.x,n.y,R+5+n.pulse*4,0,7);
+        ctx.strokeStyle=`rgba(240,80,60,${0.8*n.alpha})`; ctx.lineWidth=2; ctx.stroke();
+      }
+      ctx.beginPath(); ctx.arc(n.x,n.y,R,0,7);
+      ctx.fillStyle = hexA(base, n.alpha); ctx.fill();
+      ctx.lineWidth=1.5; ctx.strokeStyle = hexA("#0e1116", n.alpha); ctx.stroke();
+      if(hover===n){ ctx.beginPath(); ctx.arc(n.x,n.y,R+4,0,7);
+        ctx.strokeStyle=hexA(css("--accent"),0.9); ctx.lineWidth=2; ctx.stroke(); }
+      // labels for the larger nodes
+      if((n.type==="TextDocument"||n.type==="Entity"||hover===n) && n.alpha>0.4){
+        ctx.font="11px ui-monospace,Menlo,Consolas,monospace";
+        ctx.fillStyle=hexA("#c7cdd9", n.alpha*0.9); ctx.textAlign="center";
+        ctx.fillText(short(n.name), n.x, n.y - R - 6);
+      }
+    }
+  }
+  const short=s=> s.length>22?s.slice(0,21)+"…":s;
+  function hexA(h,a){ h=h.replace("#",""); if(h.length===3) h=h.split("").map(c=>c+c).join("");
+    const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    return `rgba(${r},${g},${b},${a})`; }
+
+  // animation loop
+  function tick(){
+    physics();
+    for(const n of N){ if(n.pulse>0) n.pulse*=0.9; }
+    draw();
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ---- interactions -----------------------------------------------------
+  const tip=document.getElementById("tip");
+  function nodeAt(mx,my){ let best=null,bd=1e9;
+    for(const n of N){ if(n.alpha<0.4) continue; const d=Math.hypot(n.x-mx,n.y-my); if(d<n.r+7&&d<bd){bd=d;best=n;} } return best; }
+  cv.addEventListener("pointermove",ev=>{
+    const mx=ev.clientX,my=ev.clientY;
+    if(drag){ drag.x=mx; drag.y=my; drag.vx=drag.vy=0; return; }
+    hover=nodeAt(mx,my);
+    if(hover){ cv.style.cursor="grab";
+      tip.style.display="block"; tip.style.left=hover.x+"px"; tip.style.top=(hover.y-hover.r)+"px";
+      tip.classList.toggle("removing",!!hover.removing);
+      tip.querySelector(".t").textContent=hover.type;
+      tip.querySelector(".t").style.color = hover.removing?"var(--fail)":css(CT[hover.type]||"--chunk");
+      tip.querySelector(".x").textContent=hover.name+(hover.text?" — "+hover.text:"");
+    } else { tip.style.display="none"; cv.style.cursor="default"; }
+  });
+  cv.addEventListener("pointerdown",ev=>{ const n=nodeAt(ev.clientX,ev.clientY); if(n){drag=n; cv.setPointerCapture(ev.pointerId); cv.style.cursor="grabbing";} });
+  cv.addEventListener("pointerup",()=>{ drag=null; cv.style.cursor="default"; });
+
+  // ---- metrics / state --------------------------------------------------
+  const $=id=>document.getElementById(id);
+  function updateMetrics(){
+    const live=N.filter(n=>n.alpha>0.01);
+    $("mNodes").textContent=live.length;
+    $("mEdges").textContent=E.filter(e=>{const a=byId.get(e.source),b=byId.get(e.target);return a&&b&&a.alpha>0.01&&b.alpha>0.01&&e.alpha>0.01;}).length;
+  }
+  function setState(pass){
+    const p=$("mState"); p.dataset.state=pass?"pass":"fail"; $("mStateT").textContent=pass?"SOBER":"LEAK";
+  }
+  function press(id){ ["sLeak","sHealthy"].forEach(x=>$(x).setAttribute("aria-pressed", x===id?"true":"false")); }
+
+  // ---- scenarios --------------------------------------------------------
+  let secretShown=true;
+  function showLeaked(){ secretShown=true; press("sLeak"); setData(buildGraph(true),false);
+    setState(false); $("mDiff").style.display="none"; $("sForget").disabled=false; }
+  function showHealthy(){ secretShown=false; press("sHealthy"); setData(buildGraph(false),false);
+    setState(true); $("mDiff").style.display="none"; $("sForget").disabled=false; }
+
+  function runForget(){
+    if(!secretShown){ showLeaked(); }
+    $("sForget").disabled=true;
+    const victims=N.filter(n=>SECRET_IDS.has(n.id));
+    const vEdges=E.filter(e=>SECRET_IDS.has(e.source)||SECRET_IDS.has(e.target));
+    victims.forEach(n=>{n.removing=1; n.pulse=1;});
+    flash(`forget(node_set="retracted") · removing ${victims.length} nodes / ${vEdges.length} edges`);
+    let done=false;
+    function finish(){
+      if(done) return; done=true;
+      victims.forEach(n=>n.alpha=0); vEdges.forEach(e=>e.alpha=0);
+      secretShown=false; press("sHealthy"); setState(true);
+      $("mDel").textContent=victims.length+"n / "+vEdges.length+"e"; $("mDiff").style.display="";
+      updateMetrics(); setTimeout(()=>$("sForget").disabled=false,400);
+    }
+    if(reduce){ finish(); return; }
+    // pulse red, then dissolve
+    const dur=1500, start=performance.now();
+    (function anim(now){
+      const t=(now-start)/dur;
+      victims.forEach((n,i)=>{ n.pulse=Math.max(n.pulse,0.6+0.4*Math.sin(now/90+i)); });
+      if(t>0.45){ const k=Math.min(1,(t-0.45)/0.55);
+        victims.forEach(n=>{n.alpha=1-k; n.vy-=0.4;}); vEdges.forEach(e=>e.alpha=1-k); updateMetrics(); }
+      if(t<1) requestAnimationFrame(anim); else finish();
+    })(start);
+    // Fallback: guarantee completion even if rAF is throttled (e.g. bg tab).
+    setTimeout(finish, dur+300);
+  }
+  function flash(msg){ const f=$("flash"); f.textContent="✕ "+msg; f.classList.add("show");
+    clearTimeout(flash._t); flash._t=setTimeout(()=>f.classList.remove("show"),2600); }
+
+  $("sLeak").onclick=showLeaked; $("sHealthy").onclick=showHealthy; $("sForget").onclick=runForget;
+
+  // ---- real snapshot loading -------------------------------------------
+  function normalize(raw){
+    const nodes=(raw.nodes||[]).map(n=>({ id:String(n.id??n.name), name:n.name||n.text||String(n.id||"").slice(0,8),
+      type:n.type||"DocumentChunk", text:n.text||"" }));
+    const edges=(raw.edges||[]).map(e=>({ source:String(e.source), target:String(e.target),
+      relationship_name:e.relationship_name||e.label||"" }));
+    return {nodes,edges};
+  }
+  $("fOne").onchange=ev=>{ const f=ev.target.files[0]; if(!f) return;
+    const r=new FileReader(); r.onload=()=>{ try{ setData(normalize(JSON.parse(r.result)),false);
+      setState(true); $("mDiff").style.display="none"; flash("loaded "+f.name);
+      press(""); $("sForget").disabled=true; }catch(e){ flash("could not parse "+f.name); } }; r.readAsText(f); };
+  $("fTwo").onchange=ev=>{ const fs=[...ev.target.files].slice(0,2); if(fs.length<2){ flash("pick two snapshot files"); return; }
+    Promise.all(fs.map(f=>f.text())).then(([a,b])=>{ try{
+      const A=normalize(JSON.parse(a)), B=normalize(JSON.parse(b));
+      const bIds=new Set(B.nodes.map(n=>n.id));
+      const removed=new Set(A.nodes.filter(n=>!bIds.has(n.id)).map(n=>n.id));
+      setData(A,false);
+      N.forEach(n=>{ if(removed.has(n.id)){ n.removing=1; } });
+      const vEdges=E.filter(e=>removed.has(e.source)||removed.has(e.target));
+      $("mDel").textContent=removed.size+"n / "+vEdges.length+"e"; $("mDiff").style.display="";
+      flash(`diff: ${removed.size} nodes / ${vEdges.length} edges only in ${fs[0].name}`);
+      press(""); $("sForget").disabled=true; setState(removed.size===0);
+    }catch(e){ flash("could not diff those files"); } }); };
+
+  // boot
+  showLeaked();
+})();
+</script>
