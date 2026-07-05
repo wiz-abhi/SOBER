@@ -1,0 +1,8 @@
+# Runtime deps for the hosted app (app.py) — it serves captured JSON, so it needs
+# NO cognee/torch/lancedb. Tiny, fast image.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+
+# NOTE: building the golden capture (scripts/build_golden.py) needs the full SOBER
+# stack (cognee, fastembed, etc.) — install those separately for the one-time build:
+#   pip install -e .    (see pyproject.toml)

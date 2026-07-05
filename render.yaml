@@ -1,0 +1,10 @@
+# Alternative one-click deploy: Render (render.com). Free web service.
+services:
+  - type: web
+    name: sober
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "7860"

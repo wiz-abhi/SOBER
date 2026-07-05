@@ -7,6 +7,10 @@ Built for **The Hangover Part AI: Where's My Context?** (WeMakeDevs × Cognee).
 
 **SOBER is a self-hosted, open-source tool** — a `brain` CLI + GitHub Action, MIT-licensed, that runs entirely on local Cognee (zero-config: ladybug + LanceDB + SQLite). No cloud account required. *(It also has a natural path to Cognee Cloud for canary deploys — see [Roadmap](#roadmap) — but everything below runs and is proven fully self-hosted.)*
 
+### ▶ Live demo — the memory-CI control panel
+
+A hosted web app ([`app.py`](app.py) + [`web/dashboard.html`](web/dashboard.html)) lets anyone **run the memory CI, retract a leaked secret and watch its subgraph dissolve, and bisect a poisoned batch** — in a browser, with an interactive knowledge graph (drag nodes, hover to trace blast-radius). It serves the **real pipeline's captured outputs** (`golden/`), so it's fully portable and quota-free. Deploy in minutes to Hugging Face Spaces — see [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ---
 
 ## The problem
