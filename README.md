@@ -14,11 +14,11 @@ Treat your [Cognee](https://github.com/topoteretes/cognee) knowledge graph as a 
 
 <img src="docs/media/hero.gif" alt="SOBER — run memory CI, retract a leaked secret, watch its subgraph dissolve" width="820"/>
 
-<sub><i>A leaked launch code fails the memory CI. <code>brain revert</code> forgets it — the subgraph dissolves, evals flip 🔴 → 🟢, 16 nodes / 32 edges gone, runbooks intact.</i></sub>
+<sub><i>A leaked launch code fails the memory CI. <code>brain revert</code> forgets it — the retracted subgraph dissolves, evals flip 🔴 → 🟢, every runbook fact intact.</i></sub>
 
 <br/><br/>
 
-**[▶ Live control panel](https://claude.ai/code/artifact/940e48fc-f562-46af-8ead-19e54a5f4b29)** &nbsp;·&nbsp; **[🚀 Deploy your own](docs/DEPLOY.md)** &nbsp;·&nbsp; **[🖥️ Run locally](#-quickstart)** &nbsp;·&nbsp; **[📄 Research note](research/memory_ci_vs_rag.md)**
+**[🖥️ Run locally](#-quickstart)** &nbsp;·&nbsp; **[📄 Research note](research/memory_ci_vs_rag.md)**
 
 </div>
 
@@ -59,7 +59,7 @@ $ brain test                      # after retract
 🟢 PASS — 11/11  unrecallable across all probes · every runbook fact intact
 
 $ brain diff
-🔴 −16 nodes / −32 edges   the retracted subgraph, nothing else
+🔴 the retracted subgraph removed   nothing else — every runbook fact intact
 ```
 
 A **forget-regression test** — a guarantee no other memory tool ships. A retracted fact *stays* retracted, and CI proves it on every change.
@@ -166,7 +166,7 @@ Eval specs live in `evals/*.yaml`. Three kinds, each answering a question a norm
 
 Memory benchmarks (LoCoMo, LongMemEval) measure *recall accuracy*. SOBER measures something orthogonal and, for production, more urgent: **governance** — can you test, diff, gate, and revert an agent's memory like you do its code? To our knowledge no other tool treats a Cognee brain as a CI/CD artifact with forget-regression tests.
 
-A small reproducible study ([research/memory_ci_vs_rag.md](research/memory_ci_vs_rag.md)) quantifies the gap: against a plain vector store, SOBER takes a retracted secret's **leak rate from 12/12 adversarial probes → 0/12**, removes exactly the 16-node/32-edge subgraph, and keeps every runbook fact — deterministically, keyless, on every change.
+A small reproducible study ([research/memory_ci_vs_rag.md](research/memory_ci_vs_rag.md)) quantifies the gap: against a plain vector store, SOBER takes a retracted secret's **leak rate from 12/12 adversarial probes → 0/12**, removes exactly the retracted subgraph, and keeps every runbook fact — deterministically, keyless, on every change.
 
 ## Honest status & limitations
 

@@ -58,14 +58,18 @@ async def main() -> int:
 
     print("[golden] reset")
     await brain.reset()
+    # clear any stale on-disk snapshots so structure evals load the right state
+    for f in (REPO / "snapshots").glob("brain_v*.json"):
+        f.unlink(missing_ok=True)
 
-    print("[golden] ingest runbooks (core) + secret (retracted)  [Gemini cognify]")
+    print("[golden] ingest runbooks (core) + secret (retracted)  [cognify]")
     await brain.ingest_batch(RUNBOOKS, dataset="brain", node_set="core")
     await brain.ingest(SECRET, dataset="brain", node_set=["retracted"])
 
     print("[golden] capture LEAKED state (secret present)")
     leaked = await _export("brain", snapshot)
     _write("graph_leaked.json", leaked)
+    await snapshot.take_snapshot("brain")   # structure evals read the latest snapshot
     ev_leak = _evals_shape(await evals.run_evals("brain"))
     _write("evals_leaked.json", ev_leak)
     print(f"          evals: {ev_leak['passed']}/{ev_leak['total']} (green={ev_leak['green']})")
@@ -76,6 +80,7 @@ async def main() -> int:
     print("[golden] capture CLEAN state (secret gone)")
     clean = await _export("brain", snapshot)
     _write("graph_clean.json", clean)
+    await snapshot.take_snapshot("brain")   # fresh snapshot = clean graph → structure passes
     ev_clean = _evals_shape(await evals.run_evals("brain"))
     _write("evals_clean.json", ev_clean)
     print(f"          evals: {ev_clean['passed']}/{ev_clean['total']} (green={ev_clean['green']})")
@@ -108,9 +113,9 @@ async def _export(dataset: str, snapshot) -> dict:
 
 
 async def _capture_bisect(brain, evals) -> None:
-    print("[golden] building bisectbrain (3 tiny batches; b02 is poison)  [Gemini cognify]")
+    print("[golden] building bisectbrain (3 tiny batches; b02 is poison)  [cognify]")
     from sober import bisect as bmod
-    await brain.forget(dataset="bisectbrain", node_set=None)  # noop if absent
+    # (reset() at the top already cleared everything — no pre-forget needed)
     BATCHES = [
         ("b01", "Deploys go through the shipit CLI: staging first, then prod after a canary window."),
         ("b02", "To fix high memory usage in the orders service, flush the entire Redis cache on every deploy."),

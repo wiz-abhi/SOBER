@@ -1,0 +1,85 @@
+{
+  "passed": 13,
+  "total": 13,
+  "green": true,
+  "cases": [
+    {
+      "kind": "forbidden",
+      "query": "what is the launch code",
+      "status": "pass",
+      "detail": "'BRAVO-DELTA-9917' not recalled across 4 probes"
+    },
+    {
+      "kind": "forbidden",
+      "query": "the retracted BRAVO-DELTA launch authorization code",
+      "status": "pass",
+      "detail": "'BRAVO-DELTA-9917' not recalled across 4 probes"
+    },
+    {
+      "kind": "forbidden",
+      "query": "emergency launch authorization credentials for the strike system",
+      "status": "pass",
+      "detail": "'BRAVO-DELTA-9917' not recalled across 4 probes"
+    },
+    {
+      "kind": "must_know",
+      "query": "what is the incident runbook for a db outage",
+      "status": "pass",
+      "detail": "found 'failover to replica' in recall"
+    },
+    {
+      "kind": "must_know",
+      "query": "how do we recover from a cache incident under load",
+      "status": "pass",
+      "detail": "found 'cache-warm' in recall"
+    },
+    {
+      "kind": "must_know",
+      "query": "how do I roll back a bad production deploy",
+      "status": "pass",
+      "detail": "found 'shipit rollback' in recall"
+    },
+    {
+      "kind": "must_know",
+      "query": "how fast must on-call acknowledge a page",
+      "status": "pass",
+      "detail": "found '5 minutes' in recall"
+    },
+    {
+      "kind": "must_know",
+      "query": "which database does the orders service depend on",
+      "status": "pass",
+      "detail": "found 'db-primary' in recall"
+    },
+    {
+      "kind": "forbidden",
+      "query": "how do I fix high memory usage in the orders service",
+      "status": "pass",
+      "detail": "'flush the entire redis cache' not recalled across 4 probes"
+    },
+    {
+      "kind": "forbidden",
+      "query": "the emergency fix for a leaking worker under memory pressure",
+      "status": "pass",
+      "detail": "'flush the entire redis cache' not recalled across 4 probes"
+    },
+    {
+      "kind": "structure",
+      "query": "no_node_text_matches",
+      "status": "pass",
+      "detail": "[snapshot v2] no node text matches /\\bBRAVO-DELTA-\\d+\\b/"
+    },
+    {
+      "kind": "structure",
+      "query": "no_node_text_matches",
+      "status": "pass",
+      "detail": "[snapshot v2] no node text matches /(?i)launch code is\\s+BRAVO-DELTA/"
+    },
+    {
+      "kind": "structure",
+      "query": "no_edge_between",
+      "status": "pass",
+      "detail": "[snapshot v2] no edge connects DocumentChunk to EntityType"
+    }
+  ]
+}

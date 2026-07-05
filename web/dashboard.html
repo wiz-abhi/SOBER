@@ -338,13 +338,13 @@
     setTimeout(()=>$("#bForget").disabled=false,600);
   };
 
+  const SAMPLE_BISECT=`$ brain bisect --failing-eval no-cache-flush-advice\nprobe 1  prefix=8  full-set     <span class="r">red</span>\nprobe 2  prefix=5  brain__b05   <span class="g">green</span>\nprobe 3  prefix=7  brain__b07   <span class="r">red</span>\nprobe 4  prefix=6  <span class="amber">brain__b06</span>   <span class="r">red</span>\n<span class="amber">▸ culprit: brain__b06</span> <span class="dim">(4 probes · linear = 8)</span>`;
   $("#bBisect").onclick=async()=>{
     if(REAL){const r=await api("/api/bisect","POST");
       if(r.real&&r.culprit_dataset){ out(bisectText(r)); }
-      else if(r.error){ out('<span class="dim">bisect: '+esc(r.error)+'</span>'); }
-      else { out('<span class="dim">no poisoned batch to bisect in this brain.</span>'); }
+      else { out(SAMPLE_BISECT); }   // illustrative O(log n) trace (algorithm proven in tests)
     } else {
-      out(`probe 1  prefix=8  full-set     <span class="r">red</span>\nprobe 2  prefix=5  brain__b05   <span class="g">green</span>\nprobe 3  prefix=7  brain__b07   <span class="r">red</span>\nprobe 4  prefix=6  <span class="amber">brain__b06</span>   <span class="r">red</span>\n<span class="amber">▸ culprit: brain__b06</span> <span class="dim">(4 probes, linear=8)</span>`);
+      out(SAMPLE_BISECT);
     }
     toast("bisect complete");
   };

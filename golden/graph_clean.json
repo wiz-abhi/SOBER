@@ -1,0 +1,5335 @@
+{
+  "nodes": [
+    {
+      "id": "c2d267a8-a036-5cc0-a114-04ca70b9b122",
+      "name": "",
+      "type": "TextSummary",
+      "created_at": 1783274043592,
+      "updated_at": 1783274043592,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 3,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_and_summarize",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "0f4cc608e08e683e50c8d25b9f0d3cd6",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "The runbook explains how to operate a Redis look\u2011aside cache in front of PostgreSQL and how to handle cache\u2011related incidents.\n- The architecture uses Redis as a look\u2011aside cache in front of PostgreSQL.\n- The default cache TTL is 15 minutes, and production TTLs must not be set below 60 seconds.\n- During a cache incident, latency spikes appear on read\u2011heavy endpoints while the PostgreSQL database remains healthy.\n- During a cache incident, `redis-cli info stats` reports a collapsing keyspace hit ratio.\n- The recovery procedure advises against flushing the entire Redis cache under load to avoid a cold\u2011cache stampede on the database.\n- The recovery procedure recommends warming the most critical keys first using `cache-warm --top 500` and then evicting stale namespaces selectively.\n- If Redis becomes unavailable, the application falls back to direct PostgreSQL reads, and DB replicas should be scaled up to handle the additional load.",
+      "source_chunk_id": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "summarized_in": null,
+      "global_context_bucket_id": null
+    },
+    {
+      "id": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "name": "core",
+      "type": "NodeSet",
+      "created_at": 1783273982289,
+      "updated_at": 1783273982289,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": []
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b9b3df55b07f755f4d4a218196a5de71",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5
+    },
+    {
+      "id": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "name": "",
+      "type": "DocumentChunk",
+      "created_at": 1783273981989,
+      "updated_at": 1783273981989,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 2,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_chunks_from_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "0f4cc608e08e683e50c8d25b9f0d3cd6",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "# Cache Runbook\n\nWe run Redis as a look-aside cache in front of Postgres.\n\n## Symptoms of a cache incident\n- Latency spikes on read-heavy endpoints while the DB looks healthy.\n- `redis-cli info stats` shows a collapsing `keyspace_hit_ratio`.\n\n## Recovery\n1. Do **not** flush the whole cache under load \u2014 a cold cache stampedes the DB.\n2. Instead, warm critical keys first with `cache-warm --top 500`, then evict stale namespaces selectively.\n3. If Redis itself is down, the app degrades gracefully to direct DB reads; scale up DB replicas to absorb the load.\n\nCache TTLs are 15 minutes by default; never set a TTL below 60 seconds in production.\n",
+      "chunk_size": 269,
+      "chunk_index": 0,
+      "cut_type": "paragraph_end",
+      "document_id": "65c57d32-eb5b-5959-aa7e-9429135bfb6b",
+      "document_name": "cache-runbook",
+      "truth_alignment": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "name": "redis",
+      "type": "Entity",
+      "created_at": 1783274104595,
+      "updated_at": 1783274104595,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Redis cache used by orders.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "name": "postgres",
+      "type": "Entity",
+      "created_at": 1783273983563,
+      "updated_at": 1783273983563,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Relational database.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "28b7d441-6df5-57a1-8029-4909321accb6",
+      "name": "database",
+      "type": "EntityType",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "database",
+      "relations": []
+    },
+    {
+      "id": "1332f1a8-2ec3-5ccd-886f-03a345d88edd",
+      "name": "stale namespace",
+      "type": "Entity",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Namespace evicted selectively.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "a39112c1-4768-5794-bfcf-5d57d0ad6f43",
+      "name": "namespace",
+      "type": "EntityType",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "namespace",
+      "relations": []
+    },
+    {
+      "id": "db1727e8-d176-5a1d-8d34-7ab008d4a3a0",
+      "name": "software",
+      "type": "EntityType",
+      "created_at": 1783273983563,
+      "updated_at": 1783273983563,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "software",
+      "relations": []
+    },
+    {
+      "id": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "name": "app",
+      "type": "Entity",
+      "created_at": 1783273983563,
+      "updated_at": 1783273983563,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Application that reads from cache and falls back to direct DB reads.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "a4299551-8143-50be-b4f8-749b412abc49",
+      "name": "db replica",
+      "type": "Entity",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Read replica scaled up to absorb load when Redis is down.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "92f89d8f-fe63-5133-b65f-088a566f0cae",
+      "name": "application",
+      "type": "EntityType",
+      "created_at": 1783273983563,
+      "updated_at": 1783273983563,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "application",
+      "relations": []
+    },
+    {
+      "id": "c9dfdd2e-9c9e-5443-bdb5-6ed606906034",
+      "name": "cache ttl",
+      "type": "Entity",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Cache TTL default 15 minutes; minimum production TTL is 60 seconds.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "9cf60b90-4094-524d-acc3-3d60f4f98b0e",
+      "name": "configuration",
+      "type": "EntityType",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "configuration",
+      "relations": []
+    },
+    {
+      "id": "699289ac-793b-513b-9c52-8a533f0b3255",
+      "name": "cache-warm",
+      "type": "Entity",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Utility to warm critical keys.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "062945e8-d201-5676-9401-f29f7a5e7976",
+      "name": "critical keys",
+      "type": "Entity",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Top 500 keys warmed first.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "5086fa40-cac6-5f55-b610-7ec72958a104",
+      "name": "data",
+      "type": "EntityType",
+      "created_at": 1783273983564,
+      "updated_at": 1783273983564,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "data",
+      "relations": []
+    },
+    {
+      "id": "3cfc9798-d305-554b-99a6-2b1272fbc108",
+      "name": "tool",
+      "type": "EntityType",
+      "created_at": 1783274224273,
+      "updated_at": 1783274224273,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "tool",
+      "relations": []
+    },
+    {
+      "id": "65c57d32-eb5b-5959-aa7e-9429135bfb6b",
+      "name": "cache-runbook",
+      "type": "TextDocument",
+      "created_at": 1783273981950,
+      "updated_at": 1783273981950,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "0f4cc608e08e683e50c8d25b9f0d3cd6",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "raw_data_location": "file:///C:/Users/abhis/Desktop/OSS/Cognee/sober/.venv/Lib/site-packages/cognee/.data_storage/text_0f4cc608e08e683e50c8d25b9f0d3cd6.txt",
+      "external_metadata": "{\n    \"node_set\": [\n        \"core\"\n    ]\n}",
+      "mime_type": "text/plain"
+    },
+    {
+      "id": "45fef515-62c4-5739-b6ed-f35b9f798450",
+      "name": "",
+      "type": "TextSummary",
+      "created_at": 1783274222951,
+      "updated_at": 1783274222951,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 3,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_and_summarize",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b2b4873af43bde853dfa88d75af2d6c9",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "The document lists the core services of the system, their responsibilities, owners, and monitoring endpoints.\n- The api-gateway service is a public entrypoint that terminates TLS and routes requests to internal services, and it is owned by the Platform team.\n- The orders service handles checkout and order state, connects to the Postgres database (db-primary) and Redis, and it is owned by the Commerce team.\n- The inventory service manages stock levels and reservations, operates in an event\u2011driven manner using the orders Kafka topic, and it is owned by the Commerce team.\n- The notifications service provides email and SMS fan\u2011out capabilities, and it is owned by the Growth team.\n- Every service exposes a health\u2011check endpoint at \"/healthz\".\n- Every service exposes a metrics endpoint at \"/metrics\" that Prometheus scrapes every 15 seconds.",
+      "source_chunk_id": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "summarized_in": null,
+      "global_context_bucket_id": null
+    },
+    {
+      "id": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "name": "",
+      "type": "DocumentChunk",
+      "created_at": 1783273982072,
+      "updated_at": 1783273982072,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 2,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_chunks_from_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b2b4873af43bde853dfa88d75af2d6c9",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "# Service Map\n\nOperational facts about our core services.\n\n- **api-gateway** \u2014 public entrypoint, terminates TLS, routes to internal services. Owned by team Platform.\n- **orders** \u2014 handles checkout and order state. Talks to Postgres (`db-primary`) and Redis. Owned by team Commerce.\n- **inventory** \u2014 stock levels and reservations. Event-driven off the `orders` Kafka topic. Owned by team Commerce.\n- **notifications** \u2014 email/SMS fan-out. Owned by team Growth.\n\n## Key endpoints\n- Health checks live at `/healthz` on every service.\n- Metrics are scraped from `/metrics` (Prometheus format) every 15s.\n",
+      "chunk_size": 232,
+      "chunk_index": 0,
+      "cut_type": "paragraph_end",
+      "document_id": "503ca08e-8db3-58da-9579-5fb8c00e2bc2",
+      "document_name": "service-map",
+      "truth_alignment": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "name": "api-gateway",
+      "type": "Entity",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Public entrypoint that terminates TLS and routes to internal services.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "8fad9ebf-03e7-5557-a327-243fe5518fb7",
+      "name": "platform",
+      "type": "Entity",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Team responsible for platform services.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "9d4051b8-b411-5bb5-9540-5beff8f829b5",
+      "name": "team",
+      "type": "EntityType",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "team",
+      "relations": []
+    },
+    {
+      "id": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "name": "orders",
+      "type": "Entity",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Handles checkout and order state.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "name": "commerce",
+      "type": "Entity",
+      "created_at": 1783274104595,
+      "updated_at": 1783274104595,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Team responsible for commerce services.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "name": "db-primary",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Primary Postgres database",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "427a62e4-2b36-5cd6-a108-9e28195a46f7",
+      "name": "cache",
+      "type": "EntityType",
+      "created_at": 1783274104595,
+      "updated_at": 1783274104595,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "cache",
+      "relations": []
+    },
+    {
+      "id": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "name": "/healthz",
+      "type": "Entity",
+      "created_at": 1783274104596,
+      "updated_at": 1783274104596,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Health check endpoint.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "6aeb8a47-ff86-535d-a392-001bb1d6f2d6",
+      "name": "endpoint",
+      "type": "EntityType",
+      "created_at": 1783274104596,
+      "updated_at": 1783274104596,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "endpoint",
+      "relations": []
+    },
+    {
+      "id": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "name": "/metrics",
+      "type": "Entity",
+      "created_at": 1783274104596,
+      "updated_at": 1783274104596,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Prometheus metrics endpoint scraped every 15 seconds.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "cca61dbb-0e3d-5b0b-9098-fc254ce885e7",
+      "name": "service",
+      "type": "EntityType",
+      "created_at": 1783274104593,
+      "updated_at": 1783274104593,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "service",
+      "relations": []
+    },
+    {
+      "id": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "name": "inventory",
+      "type": "Entity",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Manages stock levels and reservations.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "0b9c6731-08eb-55bd-9996-35aff976e40d",
+      "name": "orders kafka topic",
+      "type": "Entity",
+      "created_at": 1783274104596,
+      "updated_at": 1783274104596,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Kafka topic for orders events.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "3862d279-6ef0-5524-9389-d24e55cc2f08",
+      "name": "messagequeue",
+      "type": "EntityType",
+      "created_at": 1783274104596,
+      "updated_at": 1783274104596,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "messagequeue",
+      "relations": []
+    },
+    {
+      "id": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "name": "notifications",
+      "type": "Entity",
+      "created_at": 1783274104594,
+      "updated_at": 1783274104594,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Email/SMS fan-out service.",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "2f9bb573-219f-54d2-994a-b17b547fad39",
+      "name": "growth",
+      "type": "Entity",
+      "created_at": 1783274104595,
+      "updated_at": 1783274104595,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Team responsible for growth services.",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "503ca08e-8db3-58da-9579-5fb8c00e2bc2",
+      "name": "service-map",
+      "type": "TextDocument",
+      "created_at": 1783273982044,
+      "updated_at": 1783273982044,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b2b4873af43bde853dfa88d75af2d6c9",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "raw_data_location": "file:///C:/Users/abhis/Desktop/OSS/Cognee/sober/.venv/Lib/site-packages/cognee/.data_storage/text_b2b4873af43bde853dfa88d75af2d6c9.txt",
+      "external_metadata": "{\n    \"node_set\": [\n        \"core\"\n    ]\n}",
+      "mime_type": "text/plain"
+    },
+    {
+      "id": "a329ae7f-388d-5613-bdf9-0c97c187bb44",
+      "name": "",
+      "type": "TextSummary",
+      "created_at": 1783274102821,
+      "updated_at": 1783274102821,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 3,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_and_summarize",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "940911ae2cf71764ec1aa97efc771c75",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "The document is a runbook for handling a primary PostgreSQL outage.\n- SEV-1 is triggered when the primary Postgres instance is unreachable for more than 60 seconds.\n- Operators confirm the primary is down by checking that `pg_isready -h db-primary` returns a non\u2011zero status.\n- To fail over, they promote `db-replica-1` using `pg_ctl promote` and update the `DATABASE_URL` secret to point to the replica endpoint.\n- The incident is announced in the `#incidents` channel and the secondary on\u2011call is paged.\n- After the primary recovers, it is reseeded as a fresh replica and is never failed back automatically.\n- Running `VACUUM FULL` during an active outage is prohibited because it acquires an exclusive lock and stalls recovery.",
+      "source_chunk_id": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "summarized_in": null,
+      "global_context_bucket_id": null
+    },
+    {
+      "id": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "name": "",
+      "type": "DocumentChunk",
+      "created_at": 1783273982234,
+      "updated_at": 1783273982234,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 2,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_chunks_from_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "940911ae2cf71764ec1aa97efc771c75",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "# DB Outage Runbook\n\n**Severity:** SEV-1 when the primary Postgres is unreachable for > 60s.\n\n## Incident runbook for a db outage\n1. Confirm the primary is down: `pg_isready -h db-primary` returns non-zero.\n2. **Failover to replica**: promote `db-replica-1` with `pg_ctl promote`, then repoint the `DATABASE_URL` secret to the replica endpoint.\n3. Announce in `#incidents` and page the secondary on-call.\n4. Once the primary recovers, reseed it as a fresh replica \u2014 never fail back automatically.\n\n**Do not** run `VACUUM FULL` during an active outage; it takes an exclusive lock and stalls recovery.\n",
+      "chunk_size": 258,
+      "chunk_index": 0,
+      "cut_type": "paragraph_end",
+      "document_id": "c845c269-d851-5b5e-b8f9-2e6b5661368e",
+      "document_name": "db-outage-runbook",
+      "truth_alignment": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "9009c132-0489-55e5-95de-15e15e3decad",
+      "name": "db-replica-1",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Replica of the primary Postgres database",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "f54233f8-8c37-5257-867a-042b83b7525b",
+      "name": "database_url",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Secret containing the database connection string",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "74469611-7b34-57db-b29f-c2ce06c0d60f",
+      "name": "secret",
+      "type": "EntityType",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "secret",
+      "relations": []
+    },
+    {
+      "id": "770f4c39-f1b5-5202-a86e-3e34ba70bae1",
+      "name": "#incidents",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Incident notification Slack channel",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "226280da-156b-5e1a-ad29-95a06b412581",
+      "name": "channel",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "channel",
+      "relations": []
+    },
+    {
+      "id": "89b15212-a523-5536-b04f-cc68f7a687a9",
+      "name": "secondary on-call",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Secondary on-call person to be paged during incidents",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "99a82eec-bb35-5bb5-9ed2-e73fc7a756de",
+      "name": "person",
+      "type": "EntityType",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "person",
+      "relations": []
+    },
+    {
+      "id": "79142408-e064-5089-8a70-dd530b00c0c6",
+      "name": "vacuum full",
+      "type": "Entity",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Command that takes an exclusive lock and stalls recovery",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "b9b66d97-5c86-5acb-8b86-c823a45562b0",
+      "name": "active_outage",
+      "type": "Entity",
+      "created_at": 1783274232007,
+      "updated_at": 1783274232007,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Period when the database outage is active",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "214abcd9-9adf-5c8a-bb35-1e729f2d68c3",
+      "name": "event",
+      "type": "EntityType",
+      "created_at": 1783274232007,
+      "updated_at": 1783274232007,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "event",
+      "relations": []
+    },
+    {
+      "id": "3077d29f-fe2d-531a-b23f-65504ce67da1",
+      "name": "command",
+      "type": "EntityType",
+      "created_at": 1783274232004,
+      "updated_at": 1783274232004,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "command",
+      "relations": []
+    },
+    {
+      "id": "3c7b66a5-87c5-55e6-9e89-5bec1e4216e6",
+      "name": "pg_isready",
+      "type": "Entity",
+      "created_at": 1783274232007,
+      "updated_at": 1783274232007,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Command to check if a PostgreSQL server is ready",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "0c0a72fa-1f47-5c3b-b235-ac97feacc110",
+      "name": "pg_ctl promote",
+      "type": "Entity",
+      "created_at": 1783274232007,
+      "updated_at": 1783274232007,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Command to promote a PostgreSQL replica to primary",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "c845c269-d851-5b5e-b8f9-2e6b5661368e",
+      "name": "db-outage-runbook",
+      "type": "TextDocument",
+      "created_at": 1783273982209,
+      "updated_at": 1783273982209,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "940911ae2cf71764ec1aa97efc771c75",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "raw_data_location": "file:///C:/Users/abhis/Desktop/OSS/Cognee/sober/.venv/Lib/site-packages/cognee/.data_storage/text_940911ae2cf71764ec1aa97efc771c75.txt",
+      "external_metadata": "{\n    \"node_set\": [\n        \"core\"\n    ]\n}",
+      "mime_type": "text/plain"
+    },
+    {
+      "id": "fa0b3345-99e2-5487-93e9-3bca9f316967",
+      "name": "",
+      "type": "TextSummary",
+      "created_at": 1783274293290,
+      "updated_at": 1783274293290,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 3,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_and_summarize",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "70c0f4acb0f684aecd2e4b6ff4be4e4d",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "This chunk is about:\n- Roles: Primary on\u2011call, Secondary on\u2011call, Engineering manager, VP of Engineering\n- Systems: PagerDuty schedules core\u2011primary and core\u2011secondary\n- Channels: #oncall\n- Concepts: Incident escalation, SEV\u20111, SEV\u20112, postmortem, rollback authority\n\nFacts:\n- The weekly on\u2011call rotation is handed off each Monday at 10:00 in the #oncall channel.\n- Primary on\u2011call engineers must acknowledge pages within five minutes and may escalate to the secondary on\u2011call if they cannot respond.\n- During a SEV, the incident channel must be maintained as the single source of truth.\n- A blameless postmortem must be filed within forty\u2011eight hours after any SEV\u20111 or SEV\u20112.\n- The escalation ladder proceeds from the primary on\u2011call (PagerDuty schedule core\u2011primary) to the secondary on\u2011call (core\u2011secondary), then to the engineering manager, and finally to the VP of Engineering for customer\u2011facing SEV\u20111 incidents.\n- The on\u2011call engineer is authorized to roll back any deployment without additional approval.",
+      "source_chunk_id": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "summarized_in": null,
+      "global_context_bucket_id": null
+    },
+    {
+      "id": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "name": "",
+      "type": "DocumentChunk",
+      "created_at": 1783273982154,
+      "updated_at": 1783273982154,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 2,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_chunks_from_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "70c0f4acb0f684aecd2e4b6ff4be4e4d",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "# On-Call Guide\n\nOn-call rotates weekly, handed off every Monday at 10:00 in `#oncall`.\n\n## Responsibilities\n- Acknowledge pages within 5 minutes; escalate to secondary if you cannot.\n- Keep the incident channel as the single source of truth during a SEV.\n- File a blameless postmortem within 48 hours of any SEV-1 or SEV-2.\n\n## Escalation ladder\n1. Primary on-call (PagerDuty schedule `core-primary`).\n2. Secondary on-call (`core-secondary`).\n3. Engineering manager, then the VP of Engineering for customer-facing SEV-1s.\n\nThe on-call is empowered to roll back any deploy without further approval.\n",
+      "chunk_size": 240,
+      "chunk_index": 0,
+      "cut_type": "paragraph_end",
+      "document_id": "a6a7f64b-5640-58ee-b28a-5d1d61beea57",
+      "document_name": "oncall",
+      "truth_alignment": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "name": "on-call",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Weekly rotating on-call schedule",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "8b9c6555-a606-5736-9c16-20aeeda6ab9d",
+      "name": "monday",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Hand-off day for the on-call schedule",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "4a9792e6-55dd-58da-9bea-8fb85b952488",
+      "name": "day",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "day",
+      "relations": []
+    },
+    {
+      "id": "54b9b2c7-19bc-5d9d-a33d-823357decd67",
+      "name": "10:00",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Hand-off time for the on-call schedule",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "3d7380ad-3829-5912-9c69-a82919512983",
+      "name": "time",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "time",
+      "relations": []
+    },
+    {
+      "id": "c20ec528-130f-5a0c-a11b-2a7cb1222b6a",
+      "name": "#oncall",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Slack channel used for on-call handoffs",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "d6376f98-d3ce-54b4-b634-64877219577d",
+      "name": "deploy",
+      "type": "Entity",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Deployment that can be rolled back by on-call",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "69c6737a-ed96-5110-bb38-fd0f7fa6d854",
+      "name": "action",
+      "type": "EntityType",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "action",
+      "relations": []
+    },
+    {
+      "id": "9e3c314c-371a-5a2e-9442-853de69e05af",
+      "name": "sev-1",
+      "type": "Entity",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Severity level 1 incident",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "903065b6-3a9f-5282-ac23-a6748d665632",
+      "name": "incidentseverity",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "incidentseverity",
+      "relations": []
+    },
+    {
+      "id": "97ca12d0-9671-5113-991a-ce614ebecfa4",
+      "name": "sev-2",
+      "type": "Entity",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Severity level 2 incident",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "48f5cd20-2eea-5690-ac86-efc9a279cfb3",
+      "name": "blameless postmortem",
+      "type": "Entity",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Postmortem written within 48 hours of SEV-1 or SEV-2",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "3d897781-1f4f-59f0-9622-97d2f17ed585",
+      "name": "document",
+      "type": "EntityType",
+      "created_at": 1783274164356,
+      "updated_at": 1783274164356,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "document",
+      "relations": []
+    },
+    {
+      "id": "d2a381fa-3658-5ca6-ada9-2109cfc9331d",
+      "name": "concept",
+      "type": "EntityType",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "concept",
+      "relations": []
+    },
+    {
+      "id": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "name": "primary on-call",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Primary on-call person according to PagerDuty schedule core-primary",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "34c9eab0-98db-5cb3-8767-afebbf4f2c61",
+      "name": "core-primary",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "PagerDuty schedule for primary on-call",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "1fe2f5ed-23c6-50dc-b36f-cf27a9949f4b",
+      "name": "pagerdutyschedule",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "pagerdutyschedule",
+      "relations": []
+    },
+    {
+      "id": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "name": "secondary on-call",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Secondary on-call person according to PagerDuty schedule core-secondary",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "663534af-aee3-53be-a679-96821c4d3f8a",
+      "name": "core-secondary",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "PagerDuty schedule for secondary on-call",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "name": "engineering manager",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Engineering manager in the escalation ladder",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "548d52d4-0438-5b68-bd1a-3a88a5d2afd8",
+      "name": "vp of engineering",
+      "type": "Entity",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "VP of Engineering for customer-facing SEV-1 incidents",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "c37fc488-fc9a-5b35-8e54-a50ae1721557",
+      "name": "role",
+      "type": "EntityType",
+      "created_at": 1783274164351,
+      "updated_at": 1783274164351,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "role",
+      "relations": []
+    },
+    {
+      "id": "a6a7f64b-5640-58ee-b28a-5d1d61beea57",
+      "name": "oncall",
+      "type": "TextDocument",
+      "created_at": 1783273982126,
+      "updated_at": 1783273982126,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "70c0f4acb0f684aecd2e4b6ff4be4e4d",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "raw_data_location": "file:///C:/Users/abhis/Desktop/OSS/Cognee/sober/.venv/Lib/site-packages/cognee/.data_storage/text_70c0f4acb0f684aecd2e4b6ff4be4e4d.txt",
+      "external_metadata": "{\n    \"node_set\": [\n        \"core\"\n    ]\n}",
+      "mime_type": "text/plain"
+    },
+    {
+      "id": "91a9f4ff-bc3b-57cd-98d2-ef266631e3e5",
+      "name": "",
+      "type": "TextSummary",
+      "created_at": 1783274351216,
+      "updated_at": 1783274351216,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 3,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_and_summarize",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b9b3df55b07f755f4d4a218196a5de71",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "The chunk explains how to perform a blue/green deployment and rollback using the shipit CLI.\n- Merging code into the main branch triggers the CI system to build an immutable image tagged with the commit SHA.\n- The command `shipit deploy --env staging --sha <sha>` deploys the image to the staging environment and waits for the smoke test suite to turn green.\n- The command `shipit deploy --env prod --sha <sha>` promotes the same image to production, initially shifting 10% of traffic and then 100% after the canary window.\n- After promotion, the error-rate dashboard is monitored for fifteen minutes before declaring the deployment successful.\n- To roll back, the command `shipit rollback --env prod` repoints the load balancer to the previous green stack.\n- Rollbacks are instantaneous and do not require rebuilding the image.",
+      "source_chunk_id": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "summarized_in": null,
+      "global_context_bucket_id": null
+    },
+    {
+      "id": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "name": "",
+      "type": "DocumentChunk",
+      "created_at": 1783273982318,
+      "updated_at": 1783273982318,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 2,
+      "metadata": {
+        "index_fields": [
+          "text"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_chunks_from_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b9b3df55b07f755f4d4a218196a5de71",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "text": "# Deploy Runbook\n\nOur deploys are blue/green through the `shipit` CLI.\n\n## Standard deploy\n1. Merge to `main`; CI builds an immutable image tagged with the commit SHA.\n2. Run `shipit deploy --env staging --sha <sha>` and wait for the smoke suite to go green.\n3. Promote with `shipit deploy --env prod --sha <sha>`; this shifts 10% of traffic first, then 100% after the canary window.\n4. Watch the error-rate dashboard for 15 minutes before declaring success.\n\n## Rollback\nRun `shipit rollback --env prod` \u2014 it repoints the load balancer to the previous green stack. Rollbacks are instant and never require a rebuild.\n",
+      "chunk_size": 259,
+      "chunk_index": 0,
+      "cut_type": "paragraph_end",
+      "document_id": "710a225e-6bbb-514f-b84b-c75ed821141a",
+      "document_name": "deploy-runbook",
+      "truth_alignment": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "name": "main",
+      "type": "Entity",
+      "created_at": 1783274224273,
+      "updated_at": 1783274224273,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "The main branch where merges occur",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "name": "immutable image",
+      "type": "Entity",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Immutable image built by CI tagged with commit SHA",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "7579885e-3623-57b6-af00-3759951855c7",
+      "name": "commit sha",
+      "type": "Entity",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "SHA of the commit used to tag the image",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "017af076-1c28-57d6-affa-c2c81462d03c",
+      "name": "commit",
+      "type": "EntityType",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "commit",
+      "relations": []
+    },
+    {
+      "id": "8dcf0103-3011-5610-b5d1-7bb77e0c2c81",
+      "name": "image",
+      "type": "EntityType",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "image",
+      "relations": []
+    },
+    {
+      "id": "285b27e5-327d-5318-bb1c-661799b6a962",
+      "name": "branch",
+      "type": "EntityType",
+      "created_at": 1783274224273,
+      "updated_at": 1783274224273,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "branch",
+      "relations": []
+    },
+    {
+      "id": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "name": "shipit",
+      "type": "Entity",
+      "created_at": 1783274224273,
+      "updated_at": 1783274224273,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "CLI used for blue/green deploys",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "fa354357-4312-59bd-b64e-bfaab8e9347e",
+      "name": "staging",
+      "type": "Entity",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Staging environment for deployment",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "900f1189-3ae4-5dac-a90b-33ad0226e8ce",
+      "name": "environment",
+      "type": "EntityType",
+      "created_at": 1783274224273,
+      "updated_at": 1783274224273,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "environment",
+      "relations": []
+    },
+    {
+      "id": "9dd715ac-51c5-564a-895f-f09bca396a09",
+      "name": "prod",
+      "type": "Entity",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Production environment",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "c3f5b0ce-d3eb-567e-9f4c-71ca4914d415",
+      "name": "smoke suite",
+      "type": "Entity",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Smoke test suite that must go green",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "bb06f3ad-de34-58d0-8fdd-948cee90ea62",
+      "name": "suite",
+      "type": "EntityType",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "suite",
+      "relations": []
+    },
+    {
+      "id": "fc378a1c-65aa-552a-a3bc-7cc9c591e4c5",
+      "name": "canary window",
+      "type": "Entity",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Period during which traffic is shifted gradually",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "caf62e99-3769-57c7-9c66-cae9bff982ea",
+      "name": "error-rate dashboard",
+      "type": "Entity",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Dashboard showing error rate for monitoring",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "dfa79701-cb97-5544-93d1-c5a06e8992b7",
+      "name": "dashboard",
+      "type": "EntityType",
+      "created_at": 1783274224275,
+      "updated_at": 1783274224275,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "dashboard",
+      "relations": []
+    },
+    {
+      "id": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "name": "load balancer",
+      "type": "Entity",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "Load balancer that routes traffic between stacks",
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "fd6f672c-69d0-56bc-b213-598480bdb8f5",
+      "name": "previous green stack",
+      "type": "Entity",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "The prior green deployment stack used for rollback",
+      "relations": [],
+      "truth_alignment": null,
+      "truth_subspace_signature": null,
+      "truth_epoch": null
+    },
+    {
+      "id": "2a710b63-3d14-5e47-baa3-6d39ffcf0999",
+      "name": "stack",
+      "type": "EntityType",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "stack",
+      "relations": []
+    },
+    {
+      "id": "b0fd9df7-d231-56c6-b6de-b38c3191fef6",
+      "name": "infrastructure",
+      "type": "EntityType",
+      "created_at": 1783274224277,
+      "updated_at": 1783274224277,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 0,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ],
+        "identity_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": null,
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "extract_graph_from_data",
+      "source_node_set": null,
+      "source_user": null,
+      "source_content_hash": null,
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "description": "infrastructure",
+      "relations": []
+    },
+    {
+      "id": "710a225e-6bbb-514f-b84b-c75ed821141a",
+      "name": "deploy-runbook",
+      "type": "TextDocument",
+      "created_at": 1783273982289,
+      "updated_at": 1783273982289,
+      "ontology_valid": false,
+      "version": 1,
+      "topological_rank": 1,
+      "metadata": {
+        "index_fields": [
+          "name"
+        ]
+      },
+      "belongs_to_set": [
+        "core"
+      ],
+      "source_pipeline": "cognify_pipeline",
+      "source_task": "classify_documents",
+      "source_node_set": "core",
+      "source_user": "default_user@example.com",
+      "source_content_hash": "b9b3df55b07f755f4d4a218196a5de71",
+      "feedback_weight": 0.5,
+      "importance_weight": 0.5,
+      "raw_data_location": "file:///C:/Users/abhis/Desktop/OSS/Cognee/sober/.venv/Lib/site-packages/cognee/.data_storage/text_b9b3df55b07f755f4d4a218196a5de71.txt",
+      "external_metadata": "{\n    \"node_set\": [\n        \"core\"\n    ]\n}",
+      "mime_type": "text/plain"
+    }
+  ],
+  "edges": [
+    {
+      "source": "c2d267a8-a036-5cc0-a114-04ca70b9b122",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "89f6b37f-edbf-5f76-bbfa-ae8f34b2c567",
+      "feedback_weight": 0.5,
+      "edge_text": "The runbook explains how to operate a Redis look\u2011aside cache in front of Postgre belongs to set core."
+    },
+    {
+      "source": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "2262e0a4-f5ab-5ad2-9e55-fa78d25fa0e6",
+      "feedback_weight": 0.5,
+      "edge_text": "redis belongs to set core."
+    },
+    {
+      "source": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "02ffd13a-e5f9-5759-a012-2b825dfb2543",
+      "feedback_weight": 0.5,
+      "edge_text": "postgres belongs to set core."
+    },
+    {
+      "source": "1332f1a8-2ec3-5ccd-886f-03a345d88edd",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "02f35126-c71c-55a6-8d3f-825727568de7",
+      "feedback_weight": 0.5,
+      "edge_text": "stale namespace belongs to set core."
+    },
+    {
+      "source": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "a53375d8-63d4-5916-864e-6052f54c176f",
+      "feedback_weight": 0.5,
+      "edge_text": "app belongs to set core."
+    },
+    {
+      "source": "a4299551-8143-50be-b4f8-749b412abc49",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "8aa7a367-e23d-53ce-923d-d5d78ad0dbe6",
+      "feedback_weight": 0.5,
+      "edge_text": "db replica belongs to set core."
+    },
+    {
+      "source": "c9dfdd2e-9c9e-5443-bdb5-6ed606906034",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "494f927d-9923-50db-8feb-f6ccd3ab83af",
+      "feedback_weight": 0.5,
+      "edge_text": "cache ttl belongs to set core."
+    },
+    {
+      "source": "699289ac-793b-513b-9c52-8a533f0b3255",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "fd410151-6a52-50b9-9b01-dedfb7e66a42",
+      "feedback_weight": 0.5,
+      "edge_text": "cache-warm belongs to set core."
+    },
+    {
+      "source": "062945e8-d201-5676-9401-f29f7a5e7976",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "aa2e6f07-1e2c-5ea4-8a57-3bcfeb686d18",
+      "feedback_weight": 0.5,
+      "edge_text": "critical keys belongs to set core."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "cdec048e-94fa-538d-806e-eb802a69ce66",
+      "feedback_weight": 0.5,
+      "edge_text": "# Cache Runbook We run Redis as a look-aside cache in front of Postgres. ## Symp belongs to set core."
+    },
+    {
+      "source": "65c57d32-eb5b-5959-aa7e-9429135bfb6b",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "d159a87d-eee4-5f2e-93f6-f32bcf38e6fa",
+      "feedback_weight": 0.5,
+      "edge_text": "cache-runbook belongs to set core."
+    },
+    {
+      "source": "45fef515-62c4-5739-b6ed-f35b9f798450",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "e3bb8479-d0ec-5534-8356-173cababba38",
+      "feedback_weight": 0.5,
+      "edge_text": "The document lists the core services of the system, their responsibilities, owne belongs to set core."
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "119f73eb-8a6a-5fcb-81a5-74aad15f83dc",
+      "feedback_weight": 0.5,
+      "edge_text": "api-gateway belongs to set core."
+    },
+    {
+      "source": "8fad9ebf-03e7-5557-a327-243fe5518fb7",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "434eff11-a9b0-5189-8ac9-5300d490d90f",
+      "feedback_weight": 0.5,
+      "edge_text": "platform belongs to set core."
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "3f28b359-3d14-5c1f-b91f-d1505d6829cb",
+      "feedback_weight": 0.5,
+      "edge_text": "orders belongs to set core."
+    },
+    {
+      "source": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "9860d784-95c7-525b-b4e0-0fc68977d438",
+      "feedback_weight": 0.5,
+      "edge_text": "commerce belongs to set core."
+    },
+    {
+      "source": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "4cd403c9-12c3-58b5-8bdd-79e0b4177128",
+      "feedback_weight": 0.5,
+      "edge_text": "db-primary belongs to set core."
+    },
+    {
+      "source": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "4662bac3-df24-5d3c-96f7-3973cbf927f3",
+      "feedback_weight": 0.5,
+      "edge_text": "/healthz belongs to set core."
+    },
+    {
+      "source": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "aa88f8b3-f340-5db1-8093-a511697fa1d2",
+      "feedback_weight": 0.5,
+      "edge_text": "/metrics belongs to set core."
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "6ad9f30c-ed99-5bf5-adff-7438c3184de6",
+      "feedback_weight": 0.5,
+      "edge_text": "inventory belongs to set core."
+    },
+    {
+      "source": "0b9c6731-08eb-55bd-9996-35aff976e40d",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "6e6ae093-35d0-5dbd-adcf-4b7885c6e931",
+      "feedback_weight": 0.5,
+      "edge_text": "orders kafka topic belongs to set core."
+    },
+    {
+      "source": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "5ad07404-c652-5cc7-99a4-9a1aff2bc4cb",
+      "feedback_weight": 0.5,
+      "edge_text": "notifications belongs to set core."
+    },
+    {
+      "source": "2f9bb573-219f-54d2-994a-b17b547fad39",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "8c9750db-bdc6-58a2-8c68-97af573452e6",
+      "feedback_weight": 0.5,
+      "edge_text": "growth belongs to set core."
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "76aeedab-386d-5adf-b599-9136512744b4",
+      "feedback_weight": 0.5,
+      "edge_text": "# Service Map Operational facts about our core services. - **api-gateway** \u2014 pub belongs to set core."
+    },
+    {
+      "source": "503ca08e-8db3-58da-9579-5fb8c00e2bc2",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "25550067-d171-5c4b-b9c0-8205d6b5873d",
+      "feedback_weight": 0.5,
+      "edge_text": "service-map belongs to set core."
+    },
+    {
+      "source": "a329ae7f-388d-5613-bdf9-0c97c187bb44",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "a4c7a1ab-4525-516d-bda9-f4903ceb599a",
+      "feedback_weight": 0.5,
+      "edge_text": "The document is a runbook for handling a primary PostgreSQL outage. - SEV-1 is t belongs to set core."
+    },
+    {
+      "source": "9009c132-0489-55e5-95de-15e15e3decad",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "747846cd-fc03-5793-aa34-5ca2d8df1203",
+      "feedback_weight": 0.5,
+      "edge_text": "db-replica-1 belongs to set core."
+    },
+    {
+      "source": "f54233f8-8c37-5257-867a-042b83b7525b",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "4fa3d922-fb35-5475-ad16-570dd3822e7c",
+      "feedback_weight": 0.5,
+      "edge_text": "database_url belongs to set core."
+    },
+    {
+      "source": "770f4c39-f1b5-5202-a86e-3e34ba70bae1",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "1f072609-4988-5645-a027-0b798d45d79d",
+      "feedback_weight": 0.5,
+      "edge_text": "#incidents belongs to set core."
+    },
+    {
+      "source": "89b15212-a523-5536-b04f-cc68f7a687a9",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "c15d66a5-d4e6-5794-a1d2-16c016c82623",
+      "feedback_weight": 0.5,
+      "edge_text": "secondary on-call belongs to set core."
+    },
+    {
+      "source": "79142408-e064-5089-8a70-dd530b00c0c6",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "27a0a71f-ee82-571a-bd2b-69e19711d327",
+      "feedback_weight": 0.5,
+      "edge_text": "vacuum full belongs to set core."
+    },
+    {
+      "source": "b9b66d97-5c86-5acb-8b86-c823a45562b0",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "a6a569e0-3038-59a5-968e-7a998ee80026",
+      "feedback_weight": 0.5,
+      "edge_text": "active_outage belongs to set core."
+    },
+    {
+      "source": "3c7b66a5-87c5-55e6-9e89-5bec1e4216e6",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "63e43c39-560e-50bb-b7de-fb5034e9939a",
+      "feedback_weight": 0.5,
+      "edge_text": "pg_isready belongs to set core."
+    },
+    {
+      "source": "0c0a72fa-1f47-5c3b-b235-ac97feacc110",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "02a9c5a7-6b40-5771-9c5c-a6f28282f01f",
+      "feedback_weight": 0.5,
+      "edge_text": "pg_ctl promote belongs to set core."
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "805fabe7-ea65-5fc4-b8fd-2d9b39905541",
+      "feedback_weight": 0.5,
+      "edge_text": "# DB Outage Runbook **Severity:** SEV-1 when the primary Postgres is unreachable belongs to set core."
+    },
+    {
+      "source": "c845c269-d851-5b5e-b8f9-2e6b5661368e",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "b871f64c-c67c-5a28-934b-2eba1fed0c4b",
+      "feedback_weight": 0.5,
+      "edge_text": "db-outage-runbook belongs to set core."
+    },
+    {
+      "source": "fa0b3345-99e2-5487-93e9-3bca9f316967",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "28add7ab-f3b5-555c-a766-b9aff55252b3",
+      "feedback_weight": 0.5,
+      "edge_text": "This chunk is about: - Roles: Primary on\u2011call, Secondary on\u2011call, Engineering ma belongs to set core."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "94d48952-3f2f-5a38-820b-7420054ba7b3",
+      "feedback_weight": 0.5,
+      "edge_text": "on-call belongs to set core."
+    },
+    {
+      "source": "8b9c6555-a606-5736-9c16-20aeeda6ab9d",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "93adcbca-bc7b-55bb-aa02-b4f374fee2c0",
+      "feedback_weight": 0.5,
+      "edge_text": "monday belongs to set core."
+    },
+    {
+      "source": "54b9b2c7-19bc-5d9d-a33d-823357decd67",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "49bdefc4-af5e-5f4f-95ac-145c86da69c5",
+      "feedback_weight": 0.5,
+      "edge_text": "10:00 belongs to set core."
+    },
+    {
+      "source": "c20ec528-130f-5a0c-a11b-2a7cb1222b6a",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "d4124e59-3864-548c-bc7a-0aaa69fc5623",
+      "feedback_weight": 0.5,
+      "edge_text": "#oncall belongs to set core."
+    },
+    {
+      "source": "d6376f98-d3ce-54b4-b634-64877219577d",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "2525760b-c7ea-5062-ac15-2734d8739731",
+      "feedback_weight": 0.5,
+      "edge_text": "deploy belongs to set core."
+    },
+    {
+      "source": "9e3c314c-371a-5a2e-9442-853de69e05af",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "cb2fb340-077e-5b0d-a582-0c1e3f5004ae",
+      "feedback_weight": 0.5,
+      "edge_text": "sev-1 belongs to set core."
+    },
+    {
+      "source": "97ca12d0-9671-5113-991a-ce614ebecfa4",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "bed3de61-c4f2-5969-bc61-11d62bb19d01",
+      "feedback_weight": 0.5,
+      "edge_text": "sev-2 belongs to set core."
+    },
+    {
+      "source": "48f5cd20-2eea-5690-ac86-efc9a279cfb3",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "bc5cde8b-f634-59ee-a810-ace40f9fdc77",
+      "feedback_weight": 0.5,
+      "edge_text": "blameless postmortem belongs to set core."
+    },
+    {
+      "source": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "359c0335-8f3c-50dd-9fe6-84d4c6083e30",
+      "feedback_weight": 0.5,
+      "edge_text": "primary on-call belongs to set core."
+    },
+    {
+      "source": "34c9eab0-98db-5cb3-8767-afebbf4f2c61",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "6850502a-e2e2-5454-ba85-01d25f0dc0f8",
+      "feedback_weight": 0.5,
+      "edge_text": "core-primary belongs to set core."
+    },
+    {
+      "source": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "6db6b3e3-31f1-50df-ba73-1f185fd783f5",
+      "feedback_weight": 0.5,
+      "edge_text": "secondary on-call belongs to set core."
+    },
+    {
+      "source": "663534af-aee3-53be-a679-96821c4d3f8a",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "61699c7a-100a-59d8-9a64-86137243c593",
+      "feedback_weight": 0.5,
+      "edge_text": "core-secondary belongs to set core."
+    },
+    {
+      "source": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "39dbd489-ba84-5497-b97b-930470a7c312",
+      "feedback_weight": 0.5,
+      "edge_text": "engineering manager belongs to set core."
+    },
+    {
+      "source": "548d52d4-0438-5b68-bd1a-3a88a5d2afd8",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "1ad689b4-149a-5d02-8e75-a815c30b919c",
+      "feedback_weight": 0.5,
+      "edge_text": "vp of engineering belongs to set core."
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "bc915777-8bfd-5131-8a56-a0bd38673bf8",
+      "feedback_weight": 0.5,
+      "edge_text": "# On-Call Guide On-call rotates weekly, handed off every Monday at 10:00 in `#on belongs to set core."
+    },
+    {
+      "source": "a6a7f64b-5640-58ee-b28a-5d1d61beea57",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "7fd2592c-993c-5f1f-a0ae-b31b52f753f3",
+      "feedback_weight": 0.5,
+      "edge_text": "oncall belongs to set core."
+    },
+    {
+      "source": "91a9f4ff-bc3b-57cd-98d2-ef266631e3e5",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "844a6da0-528e-5b2e-bc14-938b5a36f9de",
+      "feedback_weight": 0.5,
+      "edge_text": "The chunk explains how to perform a blue/green deployment and rollback using the belongs to set core."
+    },
+    {
+      "source": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "1efe277a-b8a3-5f53-9d93-7a2b59856bd5",
+      "feedback_weight": 0.5,
+      "edge_text": "main belongs to set core."
+    },
+    {
+      "source": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "b74dc121-2eb3-5f9a-94f2-f8bd2e303a27",
+      "feedback_weight": 0.5,
+      "edge_text": "immutable image belongs to set core."
+    },
+    {
+      "source": "7579885e-3623-57b6-af00-3759951855c7",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "629947e0-4c6b-53ee-a40f-3df14a2624a5",
+      "feedback_weight": 0.5,
+      "edge_text": "commit sha belongs to set core."
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "f8477811-d96c-5492-83cd-350fd07901d0",
+      "feedback_weight": 0.5,
+      "edge_text": "shipit belongs to set core."
+    },
+    {
+      "source": "fa354357-4312-59bd-b64e-bfaab8e9347e",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "898613f2-562b-5055-8163-2ba4f33f3cdf",
+      "feedback_weight": 0.5,
+      "edge_text": "staging belongs to set core."
+    },
+    {
+      "source": "9dd715ac-51c5-564a-895f-f09bca396a09",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "7fdd25ec-e2bc-5f1f-91a4-3f7f7d2f667f",
+      "feedback_weight": 0.5,
+      "edge_text": "prod belongs to set core."
+    },
+    {
+      "source": "c3f5b0ce-d3eb-567e-9f4c-71ca4914d415",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "7da55779-8883-5a53-9d39-452c085deb93",
+      "feedback_weight": 0.5,
+      "edge_text": "smoke suite belongs to set core."
+    },
+    {
+      "source": "fc378a1c-65aa-552a-a3bc-7cc9c591e4c5",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "b34da4dd-a01b-53e4-ada6-af9bd6cd0bbd",
+      "feedback_weight": 0.5,
+      "edge_text": "canary window belongs to set core."
+    },
+    {
+      "source": "caf62e99-3769-57c7-9c66-cae9bff982ea",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "da807bc6-302f-54ad-9181-e8efc7873cc8",
+      "feedback_weight": 0.5,
+      "edge_text": "error-rate dashboard belongs to set core."
+    },
+    {
+      "source": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "2e9882ab-046c-5b75-8878-31ab1cd50732",
+      "feedback_weight": 0.5,
+      "edge_text": "load balancer belongs to set core."
+    },
+    {
+      "source": "fd6f672c-69d0-56bc-b213-598480bdb8f5",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "abc2a50c-eb5b-5770-9fa8-c5a17957a762",
+      "feedback_weight": 0.5,
+      "edge_text": "previous green stack belongs to set core."
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "8fde7a07-1e57-5404-8d7e-9e61deca8b59",
+      "feedback_weight": 0.5,
+      "edge_text": "# Deploy Runbook Our deploys are blue/green through the `shipit` CLI. ## Standar belongs to set core."
+    },
+    {
+      "source": "710a225e-6bbb-514f-b84b-c75ed821141a",
+      "target": "b4f4bf43-a418-50e6-b9bc-500338bf479d",
+      "relationship_name": "belongs_to_set",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "0b198c5d-5937-5ae1-a8f9-bd25cdfca068",
+      "feedback_weight": 0.5,
+      "edge_text": "deploy-runbook belongs to set core."
+    },
+    {
+      "source": "c2d267a8-a036-5cc0-a114-04ca70b9b122",
+      "target": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "relationship_name": "made_from",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "47041c97-0f81-51cc-afbd-7077fae3996e",
+      "feedback_weight": 0.5,
+      "edge_text": "The runbook explains how to operate a Redis look\u2011aside cache in front of Postgre made from # Cache Runbook We run Redis as a look-aside cache in front of Postgres. ## Symp."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions redis: In-memory data store used as a look-aside cache.",
+      "edge_object_id": "936375b2-90f5-5b67-aee8-878eeadf05fa",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "target": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "relationship_name": "uses",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "uses",
+      "edge_text": "App uses Redis as cache.",
+      "edge_object_id": "132d7afc-e66c-5853-991d-284d12db7c99",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "c9dfdd2e-9c9e-5443-bdb5-6ed606906034",
+      "target": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "relationship_name": "applies_to",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "applies_to",
+      "edge_text": "Cache TTL settings apply to Redis cache.",
+      "edge_object_id": "0f910c9f-1c9f-5841-8b5f-eb5bf7b42d44",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "relationship_name": "uses",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "uses",
+      "edge_text": "orders talks to Redis.",
+      "edge_object_id": "e9d2d36d-dbe4-53ae-afcd-0278f5a1d757",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions redis: Redis cache used by orders.",
+      "edge_object_id": "c72f1c2b-0edd-5212-9cb2-bfdce8f8a609",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "target": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "relationship_name": "look_aside_cache_in_front_of",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "look_aside_cache_in_front_of",
+      "edge_text": "Redis serves as a look-aside cache in front of Postgres.",
+      "edge_object_id": "a8944f40-f0d1-55dd-a418-ad2f62567ad4",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions postgres: Relational database.",
+      "edge_object_id": "8e3603c2-b354-5613-9825-372ee433d8d4",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "target": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "relationship_name": "fallback_reads",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "fallback_reads",
+      "edge_text": "App falls back to direct Postgres reads when Redis is down.",
+      "edge_object_id": "63dd1171-d295-580c-a5b7-3049b2c47498",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "7bda00d4-0078-5951-81ef-3c4f495a42ac",
+      "target": "28b7d441-6df5-57a1-8029-4909321accb6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "57603a6b-a0e9-5a41-be4e-d245cf59e224",
+      "feedback_weight": 0.5,
+      "edge_text": "postgres is a database."
+    },
+    {
+      "source": "a4299551-8143-50be-b4f8-749b412abc49",
+      "target": "28b7d441-6df5-57a1-8029-4909321accb6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "6e3ec0a9-c5e2-5954-8c51-6ffa3f626ad5",
+      "feedback_weight": 0.5,
+      "edge_text": "db replica is a database."
+    },
+    {
+      "source": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "target": "28b7d441-6df5-57a1-8029-4909321accb6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "1df0457c-9298-503c-bd77-4a7e73959d12",
+      "feedback_weight": 0.5,
+      "edge_text": "db-primary is a database."
+    },
+    {
+      "source": "9009c132-0489-55e5-95de-15e15e3decad",
+      "target": "28b7d441-6df5-57a1-8029-4909321accb6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "c6e26ab6-966f-5e93-b176-cbeb84832b53",
+      "feedback_weight": 0.5,
+      "edge_text": "db-replica-1 is a database."
+    },
+    {
+      "source": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "target": "1332f1a8-2ec3-5ccd-886f-03a345d88edd",
+      "relationship_name": "evicts",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "evicts",
+      "edge_text": "Redis evicts stale namespaces selectively.",
+      "edge_object_id": "4c409051-04f7-5379-b0b1-79fc38a6cb20",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "1332f1a8-2ec3-5ccd-886f-03a345d88edd",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions stale namespace: Namespace evicted selectively.",
+      "edge_object_id": "1f4e1c1b-cac2-5b54-8659-00f44221aa10",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "1332f1a8-2ec3-5ccd-886f-03a345d88edd",
+      "target": "a39112c1-4768-5794-bfcf-5d57d0ad6f43",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "2badad4a-b10d-5d59-8919-da0e6cdc6213",
+      "feedback_weight": 0.5,
+      "edge_text": "stale namespace is a namespace."
+    },
+    {
+      "source": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "target": "db1727e8-d176-5a1d-8d34-7ab008d4a3a0",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "7199184c-be8b-54a4-984b-e6f421250a10",
+      "feedback_weight": 0.5,
+      "edge_text": "redis is a software."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions app: Application that reads from cache and falls back to direct DB reads.",
+      "edge_object_id": "bf427459-4b4d-5920-b58c-47c8e6add96e",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "target": "a4299551-8143-50be-b4f8-749b412abc49",
+      "relationship_name": "scales_up_replicas",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "scales_up_replicas",
+      "edge_text": "App scales up DB replicas to absorb load when Redis is down.",
+      "edge_object_id": "fec2bfef-a211-525c-8965-c34c3771167b",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "a4299551-8143-50be-b4f8-749b412abc49",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions db replica: Read replica scaled up to absorb load when Redis is down.",
+      "edge_object_id": "7ec7b59c-5432-5267-9606-9741f2811f57",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "6910f642-f7d0-51cb-9970-8a614e929d4b",
+      "target": "92f89d8f-fe63-5133-b65f-088a566f0cae",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "4e62ccea-cb3c-51fd-9a92-4a1956133c88",
+      "feedback_weight": 0.5,
+      "edge_text": "app is a application."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "c9dfdd2e-9c9e-5443-bdb5-6ed606906034",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions cache ttl: Cache TTL default 15 minutes; minimum production TTL is 60 seconds.",
+      "edge_object_id": "de5d8c6b-9bd6-500d-912a-e780fbde93b0",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "c9dfdd2e-9c9e-5443-bdb5-6ed606906034",
+      "target": "9cf60b90-4094-524d-acc3-3d60f4f98b0e",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "c33f58cf-2982-5328-9ca9-8dd1610100bf",
+      "feedback_weight": 0.5,
+      "edge_text": "cache ttl is a configuration."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "699289ac-793b-513b-9c52-8a533f0b3255",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions cache-warm: Utility to warm critical keys.",
+      "edge_object_id": "d7e8032e-0368-52f3-8709-012aa2dc311c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "699289ac-793b-513b-9c52-8a533f0b3255",
+      "target": "062945e8-d201-5676-9401-f29f7a5e7976",
+      "relationship_name": "warms",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "warms",
+      "edge_text": "cache-warm warms critical keys.",
+      "edge_object_id": "592eda06-b3a0-5f8f-a116-2b3f9f9b831c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "062945e8-d201-5676-9401-f29f7a5e7976",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:54:03",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions critical keys: Top 500 keys warmed first.",
+      "edge_object_id": "3c818e01-b472-5e05-a78b-b2bd6d98b0c5",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "062945e8-d201-5676-9401-f29f7a5e7976",
+      "target": "5086fa40-cac6-5f55-b610-7ec72958a104",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "3b0efae5-99ca-5b1d-8584-bcfd26c96523",
+      "feedback_weight": 0.5,
+      "edge_text": "critical keys is a data."
+    },
+    {
+      "source": "699289ac-793b-513b-9c52-8a533f0b3255",
+      "target": "3cfc9798-d305-554b-99a6-2b1272fbc108",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "47b722ae-6fb7-57ba-a74f-d266fb81b7f9",
+      "feedback_weight": 0.5,
+      "edge_text": "cache-warm is a tool."
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "3cfc9798-d305-554b-99a6-2b1272fbc108",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "9c9231bb-5729-576b-ac37-5efea552ff0b",
+      "feedback_weight": 0.5,
+      "edge_text": "shipit is a tool."
+    },
+    {
+      "source": "aa9d7378-3838-52d6-a158-a064e94c91a6",
+      "target": "65c57d32-eb5b-5959-aa7e-9429135bfb6b",
+      "relationship_name": "is_part_of",
+      "updated_at": "2026-07-05 17:54:03",
+      "edge_object_id": "82348abd-32b3-5a6d-ba58-386b86d4bc28",
+      "feedback_weight": 0.5,
+      "edge_text": "# Cache Runbook We run Redis as a look-aside cache in front of Postgres. ## Symp is part of cache-runbook."
+    },
+    {
+      "source": "45fef515-62c4-5739-b6ed-f35b9f798450",
+      "target": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "relationship_name": "made_from",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "ea6c039d-1d94-5905-88e1-8c94bd6d2cb4",
+      "feedback_weight": 0.5,
+      "edge_text": "The document lists the core services of the system, their responsibilities, owne made from # Service Map Operational facts about our core services. - **api-gateway** \u2014 pub."
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions api-gateway: Public entrypoint that terminates TLS and routes to internal services.",
+      "edge_object_id": "6ceb3636-a53e-50c8-9204-cd0f9959f318",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "8fad9ebf-03e7-5557-a327-243fe5518fb7",
+      "relationship_name": "owned_by",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "owned_by",
+      "edge_text": "api-gateway is owned by Platform team.",
+      "edge_object_id": "16d59ae7-756d-5a1b-b71b-a54e313e7788",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "8fad9ebf-03e7-5557-a327-243fe5518fb7",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions platform: Team responsible for platform services.",
+      "edge_object_id": "b5553485-8270-5481-acc1-5ed12582240b",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8fad9ebf-03e7-5557-a327-243fe5518fb7",
+      "target": "9d4051b8-b411-5bb5-9540-5beff8f829b5",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "290c11e0-e04b-5245-bf26-b2f25e78d1fc",
+      "feedback_weight": 0.5,
+      "edge_text": "platform is a team."
+    },
+    {
+      "source": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "target": "9d4051b8-b411-5bb5-9540-5beff8f829b5",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "bbce2c12-5d9f-5d0d-851b-ca149fc5ab35",
+      "feedback_weight": 0.5,
+      "edge_text": "commerce is a team."
+    },
+    {
+      "source": "2f9bb573-219f-54d2-994a-b17b547fad39",
+      "target": "9d4051b8-b411-5bb5-9540-5beff8f829b5",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "e0a56d72-eee9-5035-abcc-c1e9ccf8d461",
+      "feedback_weight": 0.5,
+      "edge_text": "growth is a team."
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "relationship_name": "routes_to",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "routes_to",
+      "edge_text": "api-gateway routes to orders service.",
+      "edge_object_id": "7309cc93-04a2-5a71-bcb8-16bbc0d2bdd7",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions orders: Handles checkout and order state.",
+      "edge_object_id": "2b392317-7b32-5689-a745-f965201fe547",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "relationship_name": "owned_by",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "owned_by",
+      "edge_text": "orders is owned by Commerce team.",
+      "edge_object_id": "38a8d6fb-b71d-5b4c-8981-45e9d7009e58",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "relationship_name": "owned_by",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "owned_by",
+      "edge_text": "inventory is owned by Commerce team.",
+      "edge_object_id": "1873fd1b-5302-5a53-85b7-2c3ea8407d68",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "e1920762-cf0b-5f75-b164-797b0d986536",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions commerce: Team responsible for commerce services.",
+      "edge_object_id": "50c8cb8b-395d-5ce4-b987-d68074ad65c1",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "relationship_name": "uses",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "uses",
+      "edge_text": "orders talks to Postgres db-primary.",
+      "edge_object_id": "0d69fa31-db84-59dc-ae86-e1ef8e72236b",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions db-primary: PostgreSQL database used by orders.",
+      "edge_object_id": "ebd0496a-315c-5947-b2eb-c586fc6b6405",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions db-primary: Primary Postgres database",
+      "edge_object_id": "21935e6b-a473-53d7-9f3a-704f46c0cdab",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "3c7b66a5-87c5-55e6-9e89-5bec1e4216e6",
+      "target": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "relationship_name": "checks",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "checks",
+      "edge_text": "pg_isready checks db-primary",
+      "edge_object_id": "e2989108-1e83-52cc-a122-7afab09f745c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "171154d1-ffa2-52bf-b847-71f8a01ebeee",
+      "target": "427a62e4-2b36-5cd6-a108-9e28195a46f7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "d9a16159-e5b6-566a-8b98-0875d5080d03",
+      "feedback_weight": 0.5,
+      "edge_text": "redis is a cache."
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "orders provides health check endpoint /healthz.",
+      "edge_object_id": "b46606d4-5b71-56c4-85ef-5e0ece2ed9b3",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "inventory provides health check endpoint /healthz.",
+      "edge_object_id": "e0e6c4c8-ad90-5e44-ad92-20218f0e7fc4",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "target": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "notifications provides health check endpoint /healthz.",
+      "edge_object_id": "82a2a1df-81cd-5b42-bad3-07bf6984cdff",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "api-gateway provides health check endpoint /healthz.",
+      "edge_object_id": "afd6ac03-25e7-5bdc-aaaf-705fca7de260",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions /healthz: Health check endpoint.",
+      "edge_object_id": "5cb451db-80d5-5b29-b3c2-19cc7f8db9a2",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "a2ecdd05-08cc-5e88-9e74-3e0a1619d76c",
+      "target": "6aeb8a47-ff86-535d-a392-001bb1d6f2d6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "a39b92d1-51c3-5e3f-b4cd-2d839aee4528",
+      "feedback_weight": 0.5,
+      "edge_text": "/healthz is a endpoint."
+    },
+    {
+      "source": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "target": "6aeb8a47-ff86-535d-a392-001bb1d6f2d6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "1c0bd3c3-972b-5e00-baa2-a7f8288e4098",
+      "feedback_weight": 0.5,
+      "edge_text": "/metrics is a endpoint."
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "orders provides metrics endpoint /metrics.",
+      "edge_object_id": "f0b7646b-9bed-55dc-b67e-a1793442f1e2",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "inventory provides metrics endpoint /metrics.",
+      "edge_object_id": "8ad9142d-ceb5-5e3d-8a9e-947301e9d0b7",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "target": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "notifications provides metrics endpoint /metrics.",
+      "edge_object_id": "d24a377d-217c-5998-9fe4-0bcc90f9c021",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "relationship_name": "provides_endpoint",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "provides_endpoint",
+      "edge_text": "api-gateway provides metrics endpoint /metrics.",
+      "edge_object_id": "13f9fd4a-2c44-55ec-8464-b586c18337bd",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "8b6a47c3-458c-585e-9f84-4cdfda9ba81e",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions /metrics: Prometheus metrics endpoint scraped every 15 seconds.",
+      "edge_object_id": "1df6a360-380c-5c9b-8f7a-e73c20743aca",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "58958adb-d8d4-5987-92b5-c8ba2cca052c",
+      "target": "cca61dbb-0e3d-5b0b-9098-fc254ce885e7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "aeb72276-181e-56c2-8edb-4de903f871b4",
+      "feedback_weight": 0.5,
+      "edge_text": "orders is a service."
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "cca61dbb-0e3d-5b0b-9098-fc254ce885e7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "8eb6ff7c-993f-5fce-8d50-7d8041691aa4",
+      "feedback_weight": 0.5,
+      "edge_text": "inventory is a service."
+    },
+    {
+      "source": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "target": "cca61dbb-0e3d-5b0b-9098-fc254ce885e7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "c757885b-2c09-5b65-992f-ab45dd598e63",
+      "feedback_weight": 0.5,
+      "edge_text": "notifications is a service."
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "cca61dbb-0e3d-5b0b-9098-fc254ce885e7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "e8bc2e3a-b9fe-5373-b135-ff5355ce3f71",
+      "feedback_weight": 0.5,
+      "edge_text": "api-gateway is a service."
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "relationship_name": "routes_to",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "routes_to",
+      "edge_text": "api-gateway routes to inventory service.",
+      "edge_object_id": "84e9cfdc-09ac-5c16-b53c-940766e041bc",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions inventory: Manages stock levels and reservations.",
+      "edge_object_id": "ecae5b64-473f-5520-b231-bd074b8df029",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ed8071eb-1729-5ab2-85d4-c142e2fc82ae",
+      "target": "0b9c6731-08eb-55bd-9996-35aff976e40d",
+      "relationship_name": "consumes_from",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "consumes_from",
+      "edge_text": "inventory is event-driven off the orders Kafka topic.",
+      "edge_object_id": "dad98fe5-e3b3-50ad-816b-7b428d9f1acc",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "0b9c6731-08eb-55bd-9996-35aff976e40d",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions orders kafka topic: Kafka topic for orders events.",
+      "edge_object_id": "62b5a302-c2c5-5840-a617-78a4055a4007",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "0b9c6731-08eb-55bd-9996-35aff976e40d",
+      "target": "3862d279-6ef0-5524-9389-d24e55cc2f08",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "2bdfe3a8-fa98-5657-b056-2c929206e4d4",
+      "feedback_weight": 0.5,
+      "edge_text": "orders kafka topic is a messagequeue."
+    },
+    {
+      "source": "f07c20b6-b1e7-5015-b0df-0f7c0250e8e6",
+      "target": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "relationship_name": "routes_to",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "routes_to",
+      "edge_text": "api-gateway routes to notifications service.",
+      "edge_object_id": "48f9a0fd-aecb-552c-8c69-83656fbad38c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions notifications: Email/SMS fan-out service.",
+      "edge_object_id": "1cc89976-f9f3-5f7a-8ebe-de4507b73e73",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "cd50fdd0-5fb1-5b53-af5d-c7c62c99343e",
+      "target": "2f9bb573-219f-54d2-994a-b17b547fad39",
+      "relationship_name": "owned_by",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "owned_by",
+      "edge_text": "notifications is owned by Growth team.",
+      "edge_object_id": "8ed9e01f-3d48-5974-a793-6dfb3c9b89d5",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "2f9bb573-219f-54d2-994a-b17b547fad39",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:02",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions growth: Team responsible for growth services.",
+      "edge_object_id": "61b3a4dc-849b-5a23-965c-7fe1b724e180",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34097807-3880-55ba-a28f-1c6263929e5b",
+      "target": "503ca08e-8db3-58da-9579-5fb8c00e2bc2",
+      "relationship_name": "is_part_of",
+      "updated_at": "2026-07-05 17:57:02",
+      "edge_object_id": "be8893d9-35c2-5874-91bf-4a994b2b3447",
+      "feedback_weight": 0.5,
+      "edge_text": "# Service Map Operational facts about our core services. - **api-gateway** \u2014 pub is part of service-map."
+    },
+    {
+      "source": "a329ae7f-388d-5613-bdf9-0c97c187bb44",
+      "target": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "relationship_name": "made_from",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "e0a722bc-ae12-537c-8c89-8bc4c0458c1f",
+      "feedback_weight": 0.5,
+      "edge_text": "The document is a runbook for handling a primary PostgreSQL outage. - SEV-1 is t made from # DB Outage Runbook **Severity:** SEV-1 when the primary Postgres is unreachable."
+    },
+    {
+      "source": "ca288d39-491f-5696-8bbf-4a6de78c557f",
+      "target": "9009c132-0489-55e5-95de-15e15e3decad",
+      "relationship_name": "reseeds_as",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "reseeds_as",
+      "edge_text": "db-primary is reseeded as a fresh replica",
+      "edge_object_id": "77ff30df-59d6-51e5-b7ce-96ad2829cc0e",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "9009c132-0489-55e5-95de-15e15e3decad",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions db-replica-1: Replica of the primary Postgres database",
+      "edge_object_id": "06bda63d-6733-5f8b-9e45-af1ccd19eaba",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "f54233f8-8c37-5257-867a-042b83b7525b",
+      "target": "9009c132-0489-55e5-95de-15e15e3decad",
+      "relationship_name": "repoints_to",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "repoints_to",
+      "edge_text": "DATABASE_URL secret repoints to db-replica-1",
+      "edge_object_id": "ed98e2ef-1cb2-5acf-a33c-516d5d9a8531",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "0c0a72fa-1f47-5c3b-b235-ac97feacc110",
+      "target": "9009c132-0489-55e5-95de-15e15e3decad",
+      "relationship_name": "promotes",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "promotes",
+      "edge_text": "pg_ctl promote promotes db-replica-1",
+      "edge_object_id": "9bad8ec1-dcb0-55e5-a020-3b195619b379",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "f54233f8-8c37-5257-867a-042b83b7525b",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions database_url: Secret containing the database connection string",
+      "edge_object_id": "40a28cbc-c978-57ad-aa63-723fb40ec09c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "f54233f8-8c37-5257-867a-042b83b7525b",
+      "target": "74469611-7b34-57db-b29f-c2ce06c0d60f",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "105cb3f2-e1a4-5c4b-b9cb-6752dcbd2f6a",
+      "feedback_weight": 0.5,
+      "edge_text": "database_url is a secret."
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "770f4c39-f1b5-5202-a86e-3e34ba70bae1",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions #incidents: Incident notification Slack channel",
+      "edge_object_id": "0ccff573-b816-535e-8eb6-b937ad92cf21",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "89b15212-a523-5536-b04f-cc68f7a687a9",
+      "target": "770f4c39-f1b5-5202-a86e-3e34ba70bae1",
+      "relationship_name": "paged_via",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "paged_via",
+      "edge_text": "secondary on-call is paged via #incidents",
+      "edge_object_id": "e6f8d0c2-f259-5f12-a8b5-ecfec7c8a8ca",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "770f4c39-f1b5-5202-a86e-3e34ba70bae1",
+      "target": "226280da-156b-5e1a-ad29-95a06b412581",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "01b1c3bc-cd9e-5d13-8af2-9ca21db5541e",
+      "feedback_weight": 0.5,
+      "edge_text": "#incidents is a channel."
+    },
+    {
+      "source": "c20ec528-130f-5a0c-a11b-2a7cb1222b6a",
+      "target": "226280da-156b-5e1a-ad29-95a06b412581",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "4d6e777c-8ce5-5777-a236-1d4162a16790",
+      "feedback_weight": 0.5,
+      "edge_text": "#oncall is a channel."
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "89b15212-a523-5536-b04f-cc68f7a687a9",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions secondary on-call: Secondary on-call person to be paged during incidents",
+      "edge_object_id": "2d4a8652-ddbc-5903-bd0f-4dfdbc9767d1",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "89b15212-a523-5536-b04f-cc68f7a687a9",
+      "target": "99a82eec-bb35-5bb5-9ed2-e73fc7a756de",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "1d0e8f86-816b-5316-a289-23433e085995",
+      "feedback_weight": 0.5,
+      "edge_text": "secondary on-call is a person."
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "79142408-e064-5089-8a70-dd530b00c0c6",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions vacuum full: Command that takes an exclusive lock and stalls recovery",
+      "edge_object_id": "0e53f348-603a-5426-82b4-c675be74359b",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "79142408-e064-5089-8a70-dd530b00c0c6",
+      "target": "b9b66d97-5c86-5acb-8b86-c823a45562b0",
+      "relationship_name": "prohibited_during",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "prohibited_during",
+      "edge_text": "VACUUM FULL is prohibited during active_outage",
+      "edge_object_id": "72e361d1-2a22-58cf-abe1-00bf138b4506",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "b9b66d97-5c86-5acb-8b86-c823a45562b0",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions active_outage: Period when the database outage is active",
+      "edge_object_id": "63fadf2b-e844-521d-beba-75cb39e230c2",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "b9b66d97-5c86-5acb-8b86-c823a45562b0",
+      "target": "214abcd9-9adf-5c8a-bb35-1e729f2d68c3",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "1f607345-4bf4-5168-a612-49ed09b8e763",
+      "feedback_weight": 0.5,
+      "edge_text": "active_outage is a event."
+    },
+    {
+      "source": "79142408-e064-5089-8a70-dd530b00c0c6",
+      "target": "3077d29f-fe2d-531a-b23f-65504ce67da1",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "876cee57-8df6-5167-9c49-642f8f5deaa3",
+      "feedback_weight": 0.5,
+      "edge_text": "vacuum full is a command."
+    },
+    {
+      "source": "3c7b66a5-87c5-55e6-9e89-5bec1e4216e6",
+      "target": "3077d29f-fe2d-531a-b23f-65504ce67da1",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "de2cba6f-c524-55f2-b7fd-f86487a016c5",
+      "feedback_weight": 0.5,
+      "edge_text": "pg_isready is a command."
+    },
+    {
+      "source": "0c0a72fa-1f47-5c3b-b235-ac97feacc110",
+      "target": "3077d29f-fe2d-531a-b23f-65504ce67da1",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "867ad059-3221-5db3-9db6-8e260d122531",
+      "feedback_weight": 0.5,
+      "edge_text": "pg_ctl promote is a command."
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "3c7b66a5-87c5-55e6-9e89-5bec1e4216e6",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions pg_isready: Command to check if a PostgreSQL server is ready",
+      "edge_object_id": "1d874d48-267a-530b-8b59-1a093d806b86",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "0c0a72fa-1f47-5c3b-b235-ac97feacc110",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:57:12",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions pg_ctl promote: Command to promote a PostgreSQL replica to primary",
+      "edge_object_id": "b415fdfe-cc73-586d-b1be-eb78eac041e9",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "ada90c4b-a31c-5313-8d53-29d2757674eb",
+      "target": "c845c269-d851-5b5e-b8f9-2e6b5661368e",
+      "relationship_name": "is_part_of",
+      "updated_at": "2026-07-05 17:57:12",
+      "edge_object_id": "5a3c2953-b504-59e7-9118-40e3a1ef6683",
+      "feedback_weight": 0.5,
+      "edge_text": "# DB Outage Runbook **Severity:** SEV-1 when the primary Postgres is unreachable is part of db-outage-runbook."
+    },
+    {
+      "source": "fa0b3345-99e2-5487-93e9-3bca9f316967",
+      "target": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "relationship_name": "made_from",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "0aeac1a7-4e0a-50f6-9277-5b91e481e00e",
+      "feedback_weight": 0.5,
+      "edge_text": "This chunk is about: - Roles: Primary on\u2011call, Secondary on\u2011call, Engineering ma made from # On-Call Guide On-call rotates weekly, handed off every Monday at 10:00 in `#on."
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions on-call: Weekly rotating on-call schedule",
+      "edge_object_id": "836bfb32-1ec9-5efa-82a6-1855e8df145f",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "8b9c6555-a606-5736-9c16-20aeeda6ab9d",
+      "relationship_name": "handed_off_on_day",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "handed_off_on_day",
+      "edge_text": "On-call is handed off every Monday",
+      "edge_object_id": "84a3f18f-f4c4-521a-bf4f-8c82999b988d",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "8b9c6555-a606-5736-9c16-20aeeda6ab9d",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions monday: Hand-off day for the on-call schedule",
+      "edge_object_id": "ae182999-c6c2-5331-afd6-2d9230b88116",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8b9c6555-a606-5736-9c16-20aeeda6ab9d",
+      "target": "4a9792e6-55dd-58da-9bea-8fb85b952488",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "c31c60a5-a425-5e88-b2df-42c377c88f0a",
+      "feedback_weight": 0.5,
+      "edge_text": "monday is a day."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "54b9b2c7-19bc-5d9d-a33d-823357decd67",
+      "relationship_name": "handed_off_at_time",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "handed_off_at_time",
+      "edge_text": "On-call handoff occurs at 10:00",
+      "edge_object_id": "7c802f93-2a15-5b94-8766-329f6f970ba4",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "54b9b2c7-19bc-5d9d-a33d-823357decd67",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions 10:00: Hand-off time for the on-call schedule",
+      "edge_object_id": "b7832cfd-b508-50e4-9819-2c1ee66aedb0",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "54b9b2c7-19bc-5d9d-a33d-823357decd67",
+      "target": "3d7380ad-3829-5912-9c69-a82919512983",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "2acfb407-c7e5-50a0-8e76-e19de4573bcd",
+      "feedback_weight": 0.5,
+      "edge_text": "10:00 is a time."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "c20ec528-130f-5a0c-a11b-2a7cb1222b6a",
+      "relationship_name": "communicated_in",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "communicated_in",
+      "edge_text": "On-call handoff is communicated in #oncall",
+      "edge_object_id": "30f3fc5a-d16a-5dd4-b747-84ed22009db9",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "c20ec528-130f-5a0c-a11b-2a7cb1222b6a",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions #oncall: Slack channel used for on-call handoffs",
+      "edge_object_id": "58cf47c9-cd8d-568b-98ea-a28a27c38be9",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "d6376f98-d3ce-54b4-b634-64877219577d",
+      "relationship_name": "empowered_to_rollback",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "empowered_to_rollback",
+      "edge_text": "On-call is empowered to roll back any deploy without further approval",
+      "edge_object_id": "5df261cf-d412-5731-ac76-238cc48cb102",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "d6376f98-d3ce-54b4-b634-64877219577d",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions deploy: Deployment that can be rolled back by on-call",
+      "edge_object_id": "09347b2c-45b8-54ad-95c2-2a02424dae57",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d6376f98-d3ce-54b4-b634-64877219577d",
+      "target": "69c6737a-ed96-5110-bb38-fd0f7fa6d854",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "717f789a-a213-55a0-add0-fbb12b56acb5",
+      "feedback_weight": 0.5,
+      "edge_text": "deploy is a action."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "9e3c314c-371a-5a2e-9442-853de69e05af",
+      "relationship_name": "handles_incident",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "handles_incident",
+      "edge_text": "On-call handles SEV-1 incidents",
+      "edge_object_id": "e00b395d-cb23-5ad5-9fae-ad6ebbfa27e3",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "9e3c314c-371a-5a2e-9442-853de69e05af",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions sev-1: Severity level 1 incident",
+      "edge_object_id": "6e1e6049-fb0f-57e9-97ea-e21babe1bc4e",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "9e3c314c-371a-5a2e-9442-853de69e05af",
+      "target": "903065b6-3a9f-5282-ac23-a6748d665632",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "176d6061-2311-5365-8180-64e008600811",
+      "feedback_weight": 0.5,
+      "edge_text": "sev-1 is a incidentseverity."
+    },
+    {
+      "source": "97ca12d0-9671-5113-991a-ce614ebecfa4",
+      "target": "903065b6-3a9f-5282-ac23-a6748d665632",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "243f6307-b050-51ad-9cef-cd0dd7de9fa8",
+      "feedback_weight": 0.5,
+      "edge_text": "sev-2 is a incidentseverity."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "97ca12d0-9671-5113-991a-ce614ebecfa4",
+      "relationship_name": "handles_incident",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "handles_incident",
+      "edge_text": "On-call handles SEV-2 incidents",
+      "edge_object_id": "8913e53d-76f0-57a7-8eb9-b9d08169091f",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "97ca12d0-9671-5113-991a-ce614ebecfa4",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions sev-2: Severity level 2 incident",
+      "edge_object_id": "0f17cfe5-5a57-53d4-a0d6-ada77ce3b940",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "48f5cd20-2eea-5690-ac86-efc9a279cfb3",
+      "relationship_name": "files_postmortem",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "files_postmortem",
+      "edge_text": "On-call files a blameless postmortem within 48 hours of any SEV-1 or SEV-2",
+      "edge_object_id": "d36ddd9f-5f2a-5af1-9f00-826317ea2186",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "48f5cd20-2eea-5690-ac86-efc9a279cfb3",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions blameless postmortem: Postmortem written within 48 hours of SEV-1 or SEV-2",
+      "edge_object_id": "516732be-840a-5d0a-906f-a56957d18743",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "48f5cd20-2eea-5690-ac86-efc9a279cfb3",
+      "target": "3d897781-1f4f-59f0-9622-97d2f17ed585",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "d7a3c043-dc06-5aa7-a725-879fa8e5a652",
+      "feedback_weight": 0.5,
+      "edge_text": "blameless postmortem is a document."
+    },
+    {
+      "source": "364aabde-3e23-57c2-a467-8b47b6969933",
+      "target": "d2a381fa-3658-5ca6-ada9-2109cfc9331d",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "9354ca13-c7ac-563f-842b-814c4e91afc9",
+      "feedback_weight": 0.5,
+      "edge_text": "on-call is a concept."
+    },
+    {
+      "source": "fc378a1c-65aa-552a-a3bc-7cc9c591e4c5",
+      "target": "d2a381fa-3658-5ca6-ada9-2109cfc9331d",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "aebc2898-21f1-592b-87a5-2bd467622b2f",
+      "feedback_weight": 0.5,
+      "edge_text": "canary window is a concept."
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions primary on-call: Primary on-call person according to PagerDuty schedule core-primary",
+      "edge_object_id": "9ee79ce3-0abb-51a1-ab02-004f81929331",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "target": "34c9eab0-98db-5cb3-8767-afebbf4f2c61",
+      "relationship_name": "uses_schedule",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "uses_schedule",
+      "edge_text": "Primary on-call uses PagerDuty schedule core-primary",
+      "edge_object_id": "5c337ca4-b2f8-5e50-8e80-248e32dd6305",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "34c9eab0-98db-5cb3-8767-afebbf4f2c61",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions core-primary: PagerDuty schedule for primary on-call",
+      "edge_object_id": "d1ca12c1-2e2d-58ed-9ebf-3b12e4a5a4f8",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "34c9eab0-98db-5cb3-8767-afebbf4f2c61",
+      "target": "1fe2f5ed-23c6-50dc-b36f-cf27a9949f4b",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "be736e08-e76e-5daa-bd9d-a79b55029987",
+      "feedback_weight": 0.5,
+      "edge_text": "core-primary is a pagerdutyschedule."
+    },
+    {
+      "source": "663534af-aee3-53be-a679-96821c4d3f8a",
+      "target": "1fe2f5ed-23c6-50dc-b36f-cf27a9949f4b",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "7fa6ec7d-5591-5d85-a361-f8100e6dd61f",
+      "feedback_weight": 0.5,
+      "edge_text": "core-secondary is a pagerdutyschedule."
+    },
+    {
+      "source": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "target": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "relationship_name": "escalates_to",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "escalates_to",
+      "edge_text": "Primary on-call escalates to secondary on-call",
+      "edge_object_id": "cca70fe4-a5dd-5ada-b86f-9f7fc1a2cae5",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions secondary on-call: Secondary on-call person according to PagerDuty schedule core-secondary",
+      "edge_object_id": "f823c0bc-0d47-556a-b0f9-27f831d0f621",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "target": "663534af-aee3-53be-a679-96821c4d3f8a",
+      "relationship_name": "uses_schedule",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "uses_schedule",
+      "edge_text": "Secondary on-call uses PagerDuty schedule core-secondary",
+      "edge_object_id": "ab7a784c-3427-51a9-9574-63fbc26a08d0",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "663534af-aee3-53be-a679-96821c4d3f8a",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions core-secondary: PagerDuty schedule for secondary on-call",
+      "edge_object_id": "fad0f313-862a-5cf7-be0a-a6ba33b39032",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "target": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "relationship_name": "escalates_to",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "escalates_to",
+      "edge_text": "Secondary on-call escalates to engineering manager",
+      "edge_object_id": "b9cefdd3-6854-5fcf-8dbf-fe04e9e8d0db",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions engineering manager: Engineering manager in the escalation ladder",
+      "edge_object_id": "8c735e97-3bf3-5348-877b-1b5df7abe733",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "target": "548d52d4-0438-5b68-bd1a-3a88a5d2afd8",
+      "relationship_name": "escalates_to",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "escalates_to",
+      "edge_text": "Engineering manager escalates to VP of Engineering for customer\u2011facing SEV-1s",
+      "edge_object_id": "23e6894d-d060-51b6-b084-565e21ff4d1c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "548d52d4-0438-5b68-bd1a-3a88a5d2afd8",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:58:13",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions vp of engineering: VP of Engineering for customer-facing SEV-1 incidents",
+      "edge_object_id": "9bded2ca-bf40-5c75-8905-894641af91b4",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "548d52d4-0438-5b68-bd1a-3a88a5d2afd8",
+      "target": "c37fc488-fc9a-5b35-8e54-a50ae1721557",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "ba725f48-a548-51bf-a504-bb52a00e728b",
+      "feedback_weight": 0.5,
+      "edge_text": "vp of engineering is a role."
+    },
+    {
+      "source": "2f7a4fb0-2738-54ff-ac1d-95f2d9500747",
+      "target": "c37fc488-fc9a-5b35-8e54-a50ae1721557",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "631db436-5b28-5cc2-bfbf-0f7779c147a2",
+      "feedback_weight": 0.5,
+      "edge_text": "engineering manager is a role."
+    },
+    {
+      "source": "d8d9c86a-f414-504d-a063-ea7c7f62fc79",
+      "target": "c37fc488-fc9a-5b35-8e54-a50ae1721557",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "ad44ab86-f50c-59e8-ab1f-704a4e566e91",
+      "feedback_weight": 0.5,
+      "edge_text": "secondary on-call is a role."
+    },
+    {
+      "source": "baa4bc55-abdb-55ac-9cb5-4bb96fb4f21a",
+      "target": "c37fc488-fc9a-5b35-8e54-a50ae1721557",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "8792ec95-9027-5c37-a222-bfc10fe87715",
+      "feedback_weight": 0.5,
+      "edge_text": "primary on-call is a role."
+    },
+    {
+      "source": "d978793e-da0e-51d1-a3c9-aa421eb46917",
+      "target": "a6a7f64b-5640-58ee-b28a-5d1d61beea57",
+      "relationship_name": "is_part_of",
+      "updated_at": "2026-07-05 17:58:13",
+      "edge_object_id": "d5cb4021-cc27-5abe-8139-cbbad721ccea",
+      "feedback_weight": 0.5,
+      "edge_text": "# On-Call Guide On-call rotates weekly, handed off every Monday at 10:00 in `#on is part of oncall."
+    },
+    {
+      "source": "91a9f4ff-bc3b-57cd-98d2-ef266631e3e5",
+      "target": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "relationship_name": "made_from",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "9e33bef1-2e06-5584-96d7-694585969676",
+      "feedback_weight": 0.5,
+      "edge_text": "The chunk explains how to perform a blue/green deployment and rollback using the made from # Deploy Runbook Our deploys are blue/green through the `shipit` CLI. ## Standar."
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions main: The main branch where merges occur",
+      "edge_object_id": "a4023384-9c8f-5608-9fda-e3bec0c31c72",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "7579885e-3623-57b6-af00-3759951855c7",
+      "target": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "relationship_name": "merged_to",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "merged_to",
+      "edge_text": "commit SHA merged to main branch",
+      "edge_object_id": "0d72757e-ca9b-55d6-8e74-ca865987506b",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "target": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "relationship_name": "triggers_build_of",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "triggers_build_of",
+      "edge_text": "CI builds an immutable image from main",
+      "edge_object_id": "2f9da715-fa5a-5e62-9bee-fbab56c5b39e",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions immutable image: Immutable image built by CI tagged with commit SHA",
+      "edge_object_id": "d1724d37-a35b-51c6-b673-8f2724568868",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "target": "7579885e-3623-57b6-af00-3759951855c7",
+      "relationship_name": "tagged_with",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "tagged_with",
+      "edge_text": "immutable image tagged with commit SHA",
+      "edge_object_id": "6fa6742f-0b74-5270-904d-5c5f21f2267d",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "7579885e-3623-57b6-af00-3759951855c7",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions commit sha: SHA of the commit used to tag the image",
+      "edge_object_id": "33c77fdb-7e9a-576c-868b-bf4e363c4e87",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "7579885e-3623-57b6-af00-3759951855c7",
+      "target": "017af076-1c28-57d6-affa-c2c81462d03c",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "cb169a47-a394-56ed-80a9-e9737a259eb5",
+      "feedback_weight": 0.5,
+      "edge_text": "commit sha is a commit."
+    },
+    {
+      "source": "549ef536-699c-50d6-bc7d-dcf61fc3ce8b",
+      "target": "8dcf0103-3011-5610-b5d1-7bb77e0c2c81",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "300f8c12-d710-5f34-821f-368c90255043",
+      "feedback_weight": 0.5,
+      "edge_text": "immutable image is a image."
+    },
+    {
+      "source": "8aa19614-1018-50da-b74c-6bdf405812ef",
+      "target": "285b27e5-327d-5318-bb1c-661799b6a962",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "0f86fbc4-78c9-55b1-abf1-63b1f6cb4a83",
+      "feedback_weight": 0.5,
+      "edge_text": "main is a branch."
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions shipit: CLI used for blue/green deploys",
+      "edge_object_id": "c8e46bf6-3dfb-594a-b34c-0a93b8c03481",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "fa354357-4312-59bd-b64e-bfaab8e9347e",
+      "relationship_name": "deploys_to",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "deploys_to",
+      "edge_text": "shipit deploy command runs deployment to staging",
+      "edge_object_id": "c40c73c2-d1e5-540c-8b30-5a40c7e09ab0",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "fa354357-4312-59bd-b64e-bfaab8e9347e",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions staging: Staging environment for deployment",
+      "edge_object_id": "b23d3101-ad56-5470-bb27-3d5b1362cc96",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "fa354357-4312-59bd-b64e-bfaab8e9347e",
+      "target": "900f1189-3ae4-5dac-a90b-33ad0226e8ce",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "19b4c36f-43c7-5070-84ae-b3a259788fd5",
+      "feedback_weight": 0.5,
+      "edge_text": "staging is a environment."
+    },
+    {
+      "source": "9dd715ac-51c5-564a-895f-f09bca396a09",
+      "target": "900f1189-3ae4-5dac-a90b-33ad0226e8ce",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "89cdee9a-1da8-5817-b985-9681eab683d8",
+      "feedback_weight": 0.5,
+      "edge_text": "prod is a environment."
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "9dd715ac-51c5-564a-895f-f09bca396a09",
+      "relationship_name": "promotes_to",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "promotes_to",
+      "edge_text": "shipit deploy command promotes the same image to prod",
+      "edge_object_id": "e9eeaa0b-cd4c-5956-be16-e64ed5566e69",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "9dd715ac-51c5-564a-895f-f09bca396a09",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions prod: Production environment",
+      "edge_object_id": "89518669-0869-5b41-9053-f616eb08383e",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "c3f5b0ce-d3eb-567e-9f4c-71ca4914d415",
+      "relationship_name": "waits_for",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "waits_for",
+      "edge_text": "shipit deploy waits for smoke suite to go green",
+      "edge_object_id": "eee95d87-8511-5f71-9d9c-9083b63b6977",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "c3f5b0ce-d3eb-567e-9f4c-71ca4914d415",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions smoke suite: Smoke test suite that must go green",
+      "edge_object_id": "4e28b294-a99c-5bee-ab0c-549cd18e8c2c",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "c3f5b0ce-d3eb-567e-9f4c-71ca4914d415",
+      "target": "bb06f3ad-de34-58d0-8fdd-948cee90ea62",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "db35f230-c583-5bce-9727-08d62cb76952",
+      "feedback_weight": 0.5,
+      "edge_text": "smoke suite is a suite."
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "fc378a1c-65aa-552a-a3bc-7cc9c591e4c5",
+      "relationship_name": "shifts_traffic_over",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "shifts_traffic_over",
+      "edge_text": "During promotion, shipit shifts 10% then 100% traffic over the canary window",
+      "edge_object_id": "4d6a5a19-5e52-5b74-8ec3-57220749fbca",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "fc378a1c-65aa-552a-a3bc-7cc9c591e4c5",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions canary window: Period during which traffic is shifted gradually",
+      "edge_object_id": "930cf426-363f-53ab-af61-70efe22cb534",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "caf62e99-3769-57c7-9c66-cae9bff982ea",
+      "relationship_name": "monitors",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "monitors",
+      "edge_text": "shipit watches error-rate dashboard for 15 minutes",
+      "edge_object_id": "4da98090-4e32-5bb7-973e-e9f95109e91d",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "caf62e99-3769-57c7-9c66-cae9bff982ea",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions error-rate dashboard: Dashboard showing error rate for monitoring",
+      "edge_object_id": "8c958d0c-5b94-58d9-b58d-872f38f351cf",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "caf62e99-3769-57c7-9c66-cae9bff982ea",
+      "target": "dfa79701-cb97-5544-93d1-c5a06e8992b7",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "73486582-2096-53d2-958b-5c59ed9f48fa",
+      "feedback_weight": 0.5,
+      "edge_text": "error-rate dashboard is a dashboard."
+    },
+    {
+      "source": "0d431454-f532-58f8-97b9-0dc64ac06e7d",
+      "target": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "relationship_name": "rolls_back_via",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "rolls_back_via",
+      "edge_text": "shipit rollback repoints load balancer to previous green stack",
+      "edge_object_id": "4cea9998-1555-52b1-9293-5133c360fac8",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions load balancer: Load balancer that routes traffic between stacks",
+      "edge_object_id": "49a1b1c1-8a02-5ad4-b8f4-b496b37f4ebd",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "target": "fd6f672c-69d0-56bc-b213-598480bdb8f5",
+      "relationship_name": "points_to",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "points_to",
+      "edge_text": "load balancer points to previous green stack after rollback",
+      "edge_object_id": "8a6a3e66-a52d-59aa-9f4c-43333d85aca1",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "fd6f672c-69d0-56bc-b213-598480bdb8f5",
+      "relationship_name": "contains",
+      "updated_at": "2026-07-05 17:59:11",
+      "relationship_type": "contains",
+      "edge_text": "Document chunk mentions previous green stack: The prior green deployment stack used for rollback",
+      "edge_object_id": "77595101-5c53-518c-9786-82438713a437",
+      "feedback_weight": 0.5
+    },
+    {
+      "source": "fd6f672c-69d0-56bc-b213-598480bdb8f5",
+      "target": "2a710b63-3d14-5e47-baa3-6d39ffcf0999",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "367836e0-516c-54ab-82a8-8e703980774f",
+      "feedback_weight": 0.5,
+      "edge_text": "previous green stack is a stack."
+    },
+    {
+      "source": "b2fd4a53-6e38-5be3-b9dc-2b9c1ba6f284",
+      "target": "b0fd9df7-d231-56c6-b6de-b38c3191fef6",
+      "relationship_name": "is_a",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "4266cd29-a0f6-5f14-9693-afcc537ce4b2",
+      "feedback_weight": 0.5,
+      "edge_text": "load balancer is a infrastructure."
+    },
+    {
+      "source": "8a4d9590-9773-5212-974d-4a7e825433f9",
+      "target": "710a225e-6bbb-514f-b84b-c75ed821141a",
+      "relationship_name": "is_part_of",
+      "updated_at": "2026-07-05 17:59:11",
+      "edge_object_id": "66592242-aab3-57e8-a231-602131d3fddc",
+      "feedback_weight": 0.5,
+      "edge_text": "# Deploy Runbook Our deploys are blue/green through the `shipit` CLI. ## Standar is part of deploy-runbook."
+    }
+  ]
+}
