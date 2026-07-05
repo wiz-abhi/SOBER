@@ -161,6 +161,8 @@ SOBER is complete and proven as a self-hosted, open-source tool. Natural next st
 
 Memory benchmarks (LoCoMo, LongMemEval) measure *recall accuracy*. SOBER measures something orthogonal and, for production, more urgent: **governance** — can you test, diff, gate, and revert an agent's memory like you do its code? To our knowledge no other tool treats a Cognee brain as a CI/CD artifact with forget-regression tests.
 
+A small reproducible study ([research/memory_ci_vs_rag.md](research/memory_ci_vs_rag.md)) quantifies the gap: against a plain vector store, SOBER takes a retracted secret's **leak rate from 12/12 adversarial probes to 0/12**, removes exactly the 16-node/32-edge subgraph, and keeps every runbook fact — deterministically, keyless, on every change.
+
 ## AI-assistance disclosure
 
 Per the hackathon's disclosure requirement: this project was built with **Claude Code** (Anthropic) as an AI pair programmer — scaffolding, module implementation, and this README. All architecture decisions, the Cognee integration approach, and final review are the author's. Every claim marked "proven" above was executed and verified against the real stack, not generated.

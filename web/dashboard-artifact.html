@@ -131,6 +131,12 @@
   const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
   const hexA=(h,a)=>{h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");
     return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;};
+  // cache CSS-var colors once (getComputedStyle per-frame is slow), + a lightener for sphere shading
+  const COL={};["--doc","--chunk","--entity","--etype","--summary","--accent"].forEach(k=>COL[k]=css(k));
+  const col=t=>COL[CT[t]||"--chunk"];
+  const litRGBA=(h,lit,a)=>{h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");
+    let r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+    return`rgba(${(r+(255-r)*lit)|0},${(g+(255-g)*lit)|0},${(b+(255-b)*lit)|0},${a})`;};
 
   // ---------- built-in sample (fallback when backend has no golden brain) ----------
   const H_N=[["doc_db","DB Outage Runbook","TextDocument","Failover to replica; promote db-replica-1."],
@@ -203,21 +209,36 @@
   function draw(){
     ctx.clearRect(0,0,W,H);
     const hi=hover?neigh.get(hover.id):null; // blast-radius set
-    for(const e of E){const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)continue;const al=Math.min(a.alpha,b.alpha,e.alpha);if(al<=0)continue;
-      const rm=a.removing||b.removing;
-      const inHi=hover&&(e.source===hover.id||e.target===hover.id);
-      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-      ctx.strokeStyle=rm?`rgba(240,80,60,${.6*al})`:inHi?hexA(css("--accent"),.55*al):`rgba(120,132,153,${(hover?.08:.2)*al})`;
-      ctx.lineWidth=rm?1.7:inHi?1.8:1;ctx.stroke();}
-    for(const n of N){if(n.alpha<=0)continue;const base=css(CT[n.type]||"--chunk");const R=n.r*(1+n.pulse*.5);
-      const dim=hover&&n!==hover&&!(hi&&hi.has(n.id));
+    // edges: gentle curve with a source->target colour gradient
+    for(const e of E){const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)continue;
+      const al=Math.min(a.alpha,b.alpha,e.alpha);if(al<=0)continue;
+      const rm=a.removing||b.removing, inHi=hover&&(e.source===hover.id||e.target===hover.id);
+      const dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,off=Math.min(26,len*.14);
+      const cx=(a.x+b.x)/2-dy/len*off, cy=(a.y+b.y)/2+dx/len*off;
+      let stroke,w;
+      if(rm){stroke=`rgba(240,80,60,${.6*al})`;w=1.8;}
+      else if(inHi){stroke=hexA(COL["--accent"],.5*al);w=1.8;}
+      else{const g=ctx.createLinearGradient(a.x,a.y,b.x,b.y);const o=(hover?.05:.17)*al;
+        g.addColorStop(0,hexA(col(a.type),o));g.addColorStop(1,hexA(col(b.type),o));stroke=g;w=1.1;}
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.quadraticCurveTo(cx,cy,b.x,b.y);
+      ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke();}
+    // nodes: soft glow halo + radial sphere shading
+    for(const n of N){if(n.alpha<=0)continue;const base=col(n.type),R=n.r*(1+n.pulse*.5);
+      const dim=hover&&n!==hover&&!(hi&&hi.has(n.id)),a=(dim?.28:1)*n.alpha;
+      const gr=R*2.7,gg=ctx.createRadialGradient(n.x,n.y,R*.5,n.x,n.y,gr);
+      gg.addColorStop(0,hexA(n.removing?"#f0503c":base,.30*a));gg.addColorStop(1,hexA(base,0));
+      ctx.beginPath();ctx.arc(n.x,n.y,gr,0,7);ctx.fillStyle=gg;ctx.fill();
       if(n.removing){ctx.beginPath();ctx.arc(n.x,n.y,R+5+n.pulse*4,0,7);ctx.strokeStyle=`rgba(240,80,60,${.85*n.alpha})`;ctx.lineWidth=2;ctx.stroke();}
-      ctx.beginPath();ctx.arc(n.x,n.y,R,0,7);ctx.fillStyle=hexA(base,(dim?.28:1)*n.alpha);ctx.fill();
-      ctx.lineWidth=1.5;ctx.strokeStyle=hexA("#0e1116",n.alpha);ctx.stroke();
-      if(n===hover){ctx.beginPath();ctx.arc(n.x,n.y,R+4,0,7);ctx.strokeStyle=hexA(css("--accent"),.9);ctx.lineWidth=2;ctx.stroke();}
+      const sg=ctx.createRadialGradient(n.x-R*.4,n.y-R*.4,R*.15,n.x,n.y,R);
+      sg.addColorStop(0,litRGBA(base,.45,a));sg.addColorStop(1,hexA(base,a));
+      ctx.beginPath();ctx.arc(n.x,n.y,R,0,7);ctx.fillStyle=sg;ctx.fill();
+      ctx.lineWidth=1;ctx.strokeStyle=litRGBA(base,.55,a*.5);ctx.stroke();
+      if(n===hover){ctx.beginPath();ctx.arc(n.x,n.y,R+4,0,7);ctx.strokeStyle=hexA(COL["--accent"],.9);ctx.lineWidth=2;ctx.stroke();}
       if((n.type==="TextDocument"||n.type==="Entity"||n===hover)&&n.alpha>.4&&!dim){
-        ctx.font="600 11px ui-monospace,Menlo,monospace";ctx.fillStyle=hexA("#c7cdd9",n.alpha*.9);ctx.textAlign="center";
-        const nm=n.name.length>18?n.name.slice(0,17)+"…":n.name;ctx.fillText(nm,n.x,n.y-R-5);}}
+        ctx.font="600 11px ui-monospace,Menlo,monospace";ctx.textAlign="center";
+        const nm=n.name.length>18?n.name.slice(0,17)+"…":n.name, ly=n.y-R-6;
+        ctx.fillStyle="rgba(8,10,14,.9)";ctx.fillText(nm,n.x+.7,ly+.7);
+        ctx.fillStyle=hexA("#dfe4ee",n.alpha);ctx.fillText(nm,n.x,ly);}}
   }
   function loop(){step();draw();requestAnimationFrame(loop);}
   rs();requestAnimationFrame(loop);
