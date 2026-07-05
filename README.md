@@ -9,6 +9,7 @@ Treat your [Cognee](https://github.com/topoteretes/cognee) knowledge graph as a 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-5b8def?style=flat-square&logo=python&logoColor=white)](pyproject.toml)
 [![Built on Cognee](https://img.shields.io/badge/built%20on-Cognee-3fb1a8?style=flat-square)](https://github.com/topoteretes/cognee)
 [![memory: can't merge a regression](https://img.shields.io/badge/memory-can't%20merge%20a%20regression-3fb950?style=flat-square)](#-1--forbidden-knowledge-tests--surgical-forget)
+[![Live demo](https://img.shields.io/badge/▶%20live%20demo-HF%20Spaces-e8a13a?style=flat-square)](https://wiz-abhi-sober.hf.space)
 
 <br/>
 
@@ -18,7 +19,7 @@ Treat your [Cognee](https://github.com/topoteretes/cognee) knowledge graph as a 
 
 <br/><br/>
 
-**[🖥️ Run locally](#-quickstart)** &nbsp;·&nbsp; **[📄 Research note](research/memory_ci_vs_rag.md)**
+**[▶ Live demo](https://wiz-abhi-sober.hf.space)** &nbsp;·&nbsp; **[🖥️ Run locally](#-quickstart)** &nbsp;·&nbsp; **[📄 Research note](research/memory_ci_vs_rag.md)**
 
 </div>
 
@@ -99,7 +100,7 @@ The nightly Action runs this gate and, on success, **opens a pull request** whos
 
 A hosted web app ([`app.py`](app.py) + [`web/dashboard.html`](web/dashboard.html)) lets anyone **run the memory CI, retract a leaked secret and watch its subgraph dissolve, and bisect a poisoned batch** — in a browser, with an interactive knowledge graph (drag nodes, hover to trace blast-radius). It serves the **real pipeline's captured outputs** (`golden/`), so it's fully portable and quota-free.
 
-**[▶ Open the live control panel](https://claude.ai/code/artifact/940e48fc-f562-46af-8ead-19e54a5f4b29)** &nbsp;·&nbsp; deploy your own to Hugging Face Spaces in minutes → [docs/DEPLOY.md](docs/DEPLOY.md)
+**[▶ Open the live app → wiz-abhi-sober.hf.space](https://wiz-abhi-sober.hf.space)** &nbsp;·&nbsp; deploy your own to Hugging Face Spaces in minutes → [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ---
 

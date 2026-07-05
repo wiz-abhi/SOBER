@@ -31,7 +31,7 @@ git add golden && git commit -m "chore: golden capture for live app" && git push
 
 1. Create a free account at huggingface.co.
 2. **New → Space** → SDK **Docker** → name it `sober`.
-3. Use [`deploy/hf-README.md`](deploy/hf-README.md) as the Space's `README.md`
+3. Use [`deploy/hf-README.md`](../deploy/hf-README.md) as the Space's `README.md`
    (its frontmatter sets `sdk: docker`, `app_port: 7860`).
 4. Push this repo to the Space:
    ```bash
