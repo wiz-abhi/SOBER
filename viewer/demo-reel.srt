@@ -1,0 +1,44 @@
+1
+00:00:00,000 --> 00:00:07,000
+An agent brain, built from ops runbooks —
+but someone ingested a secret launch code.
+
+2
+00:00:07,000 --> 00:00:15,000
+A leaked secret is recallable, even across paraphrases.
+Memory CI catches it — the build fails.
+
+3
+00:00:17,000 --> 00:00:22,500
+forget() the secret, surgically.
+One node-set, nothing else.
+
+4
+00:00:23,500 --> 00:00:31,000
+Unrecallable across every probe —
+and every runbook fact still intact.
+
+5
+00:00:31,000 --> 00:00:36,000
+A forget-regression test: proof, on every
+change, that the secret is gone.
+
+6
+00:00:36,000 --> 00:00:41,000
+Now watch it happen in the graph —
+an AI un-remembering, on command.
+
+7
+00:00:41,000 --> 00:00:46,000
+LEAK turns to SOBER.
+The secret's subgraph just dissolved.
+
+8
+00:00:51,000 --> 00:00:59,000
+And git bisect for a poisoned brain —
+the bad batch, localized in O(log n).
+
+9
+00:00:59,000 --> 00:01:04,000
+SOBER — your brain can't merge a regression anymore.
+github.com/wiz-abhi/SOBER
