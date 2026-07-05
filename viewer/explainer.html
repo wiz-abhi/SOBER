@@ -6,77 +6,123 @@
 <title>SOBER · Explainer</title>
 <style>
   :root{
-    --ground:#0e1116; --panel:#161b22; --line:#28303b; --ink:#e8ebf2; --muted:#8a93a3;
-    --accent:#e8a13a; --pass:#3fb950; --fail:#f0503c;
-    --doc:#5b8def; --chunk:#7d8799; --entity:#e8a13a; --etype:#b07de0; --summary:#3fb1a8;
+    --ground:#0b0e13; --panel:#11151c; --panel-2:#171c25; --line:#232a35;
+    --ink:#e8ebf2; --muted:#8a93a3; --accent:#e8a13a; --pass:#3fb950; --fail:#f0503c;
+    --doc:#5b8def; --chunk:#66707f; --entity:#e8a13a; --etype:#9d7fd6; --summary:#3fb1a8;
     --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:#05070a;overflow:hidden}
-  .stage{position:fixed;inset:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
-    background-image:radial-gradient(1100px 560px at 78% -12%,#1a2130 0%,transparent 60%);overflow:hidden}
-  #g{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .8s}
-  #g.show{opacity:1}
+  html,body{margin:0;height:100%;background:#07090d;overflow:hidden}
+  .stage{position:fixed;inset:0;background:var(--ground);color:var(--ink);font-family:var(--sans);overflow:hidden;
+    background-image:radial-gradient(1000px 500px at 75% -10%,#141a26 0%,transparent 60%)}
 
-  /* top progress + wordmark */
-  .top{position:absolute;top:0;left:0;right:0;height:52px;display:flex;align-items:center;gap:16px;padding:0 28px;z-index:6}
-  .wm{font-family:var(--mono);font-weight:700;letter-spacing:.5px;font-size:16px;display:flex;align-items:center;gap:9px;opacity:.9}
-  .wm .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  /* top bar */
+  .top{position:absolute;top:0;left:0;right:0;height:50px;display:flex;align-items:center;gap:16px;padding:0 26px;z-index:8}
+  .wm{font-family:var(--mono);font-weight:700;letter-spacing:.5px;font-size:15px;display:flex;align-items:center;gap:9px;opacity:.92}
+  .wm .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
   .wm small{color:var(--muted);font-weight:400}
-  .prog{margin-left:auto;width:230px;height:4px;background:#20262f;border-radius:99px;overflow:hidden}
+  .prog{margin-left:auto;width:220px;height:3px;background:#1d232d;border-radius:99px;overflow:hidden}
   .prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#ffcf7a)}
 
-  /* HUD (demo metrics) */
-  .hud{position:absolute;top:64px;right:28px;z-index:5;display:flex;gap:9px;font-family:var(--mono);opacity:0;transition:.5s}
-  .hud.show{opacity:1}
-  .pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#1b222c;font-size:14px}
+  /* ---------- split demo layout ---------- */
+  .demo{position:absolute;top:50px;left:0;right:0;bottom:0;display:flex;opacity:0;transition:opacity .7s;z-index:2}
+  .demo.show{opacity:1}
+  .term{width:52%;display:flex;flex-direction:column;padding:22px 8px 96px 26px}
+  .tcard{flex:1;background:#0a0d12;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 20px 60px #00000055}
+  .thead{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-bottom:1px solid var(--line);background:#0d1117}
+  .thead i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .thead .r{background:#3a3f4b}.thead .y{background:#3a3f4b}.thead .g2{background:#3a3f4b}
+  .thead span{margin-left:8px;font:11.5px var(--mono);color:var(--muted)}
+  .cli{flex:1;padding:16px 18px;font-family:var(--mono);font-size:15.5px;line-height:1.75;white-space:pre-wrap;overflow:hidden;color:#c9d0dc}
+  .cli .ps{color:var(--accent);font-weight:700} .cli .cmd{color:#e8ebf2;font-weight:600}
+  .cli .ok{color:var(--pass)} .cli .bad{color:var(--fail)} .cli .amber{color:#ffcf7a} .cli .dim{color:var(--muted)}
+  .cli .cursor{display:inline-block;width:1.02ch;background:#c9d0dc;animation:bl 1s steps(1) infinite}
+  @keyframes bl{50%{opacity:0}}
+
+  .gwrap{width:48%;padding:22px 26px 96px 8px;display:flex}
+  .gcard{flex:1;position:relative;background:#0a0d12;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 20px 60px #00000055}
+  .gtitle{position:absolute;top:12px;left:16px;z-index:3;font:600 10.5px/1 var(--mono);letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  .hud{position:absolute;top:10px;right:12px;z-index:3;display:flex;gap:7px;font-family:var(--mono)}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:#131820;font-size:11.5px}
   .pill .k{color:var(--muted)} .del{color:var(--fail)}
   .pill.state{transition:.35s}
-  .pill.state[data-s="pass"]{border-color:#255c33;background:#12241a;color:var(--pass)}
-  .pill.state[data-s="fail"]{border-color:#5c2a24;background:#241413;color:var(--fail)}
-  .pill .led{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 9px currentColor}
+  .pill.state[data-s="pass"]{border-color:#22522e;background:#101d15;color:var(--pass)}
+  .pill.state[data-s="fail"]{border-color:#53271f;background:#1e1210;color:var(--fail)}
+  .pill .led{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+  #g{position:absolute;inset:0;width:100%;height:100%}
 
-  /* centred text scenes */
-  .scene{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:20px;text-align:center;
-    padding:0 12%;z-index:4;opacity:0;transform:translateY(10px);transition:.6s;pointer-events:none}
+  /* ---------- text scenes ---------- */
+  .scene{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;text-align:center;
+    padding:0 12% 80px;z-index:4;opacity:0;transform:translateY(10px);transition:.6s;pointer-events:none}
   .scene.show{opacity:1;transform:none}
-  .scene .eyebrow{font-family:var(--mono);font-size:15px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
-  .scene h1{margin:0;font-family:var(--mono);font-weight:700;font-size:76px;letter-spacing:1px}
+  .scene .eyebrow{font-family:var(--mono);font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--muted)}
+  .scene h1{margin:0;font-family:var(--mono);font-weight:700;font-size:72px;letter-spacing:1px}
   .scene h1 .dot{color:var(--accent)}
-  .scene h2{margin:0;font-weight:600;font-size:40px;line-height:1.2;text-wrap:balance;max-width:15ch}
-  .scene p{margin:0;color:#b9c1d1;font-size:23px;max-width:26ch;line-height:1.5}
-  .scene .url{font-family:var(--mono);color:#ffcf7a;font-size:20px}
-  .rows{display:flex;flex-direction:column;gap:14px;align-items:flex-start;text-align:left}
-  .row{display:flex;align-items:center;gap:14px;font-size:26px;opacity:0;transform:translateX(-8px);transition:.5s}
+  .scene h2{margin:0;font-weight:600;font-size:38px;line-height:1.22;text-wrap:balance;max-width:17ch}
+  .scene p{margin:0;color:#b9c1d1;font-size:22px;max-width:28ch;line-height:1.5}
+  .scene .url{font-family:var(--mono);color:#ffcf7a;font-size:19px}
+  .rows{display:flex;flex-direction:column;gap:13px;align-items:flex-start;text-align:left}
+  .row{display:flex;align-items:center;gap:13px;font-size:24px;opacity:0;transform:translateX(-8px);transition:.5s}
   .row.show{opacity:1;transform:none}
-  .row .x{color:var(--fail);font-family:var(--mono);font-weight:700;width:24px}
-  .stat{display:flex;gap:34px;margin-top:6px}
-  .stat div{font-family:var(--mono)} .stat b{display:block;font-size:46px} .stat .lab{font-size:15px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .row .x{color:var(--fail);font-family:var(--mono);font-weight:700;width:22px}
+  .stat{display:flex;gap:32px;margin-top:4px}
+  .stat div{font-family:var(--mono)} .stat b{display:block;font-size:44px} .stat .lab{font-size:14px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
   .amber{color:var(--accent)} .g{color:var(--pass)} .r{color:var(--fail)}
 
-  /* caption bar (persistent, like a narrator) */
-  .cap{position:absolute;left:0;right:0;bottom:0;height:96px;display:flex;align-items:center;justify-content:center;
-    padding:0 8%;text-align:center;z-index:7;background:linear-gradient(#0b0e13aa,#0b0e13ee);border-top:1px solid var(--line)}
-  .cap span{font-size:30px;font-weight:600;max-width:90%;text-wrap:balance;opacity:0;transform:translateY(6px);transition:.4s;line-height:1.25}
-  .cap span.show{opacity:1;transform:none}
+  /* mock nightly PR card */
+  .pr{width:min(620px,80vw);text-align:left;background:#0d1117;border:1px solid #2b3442;border-radius:12px;overflow:hidden;
+    box-shadow:0 24px 70px #00000066;font-size:15px}
+  .pr .ph{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid #232a35}
+  .pr .badge{font:600 11px var(--mono);letter-spacing:.5px;padding:4px 10px;border-radius:999px;background:#12241a;border:1px solid #255c33;color:var(--pass)}
+  .pr .pt{font-weight:600;font-size:17px}
+  .pr .pb{padding:14px 18px;display:flex;flex-direction:column;gap:9px;color:#b9c1d1}
+  .pr .li{display:flex;gap:9px;align-items:baseline}
+  .pr .li b{color:var(--ink)}
+  .pr .ic2{font-family:var(--mono);color:var(--muted)}
+  .pr .pf{display:flex;gap:10px;padding:13px 18px;border-top:1px solid #232a35}
+  .pr .btn{font:600 13.5px var(--sans);padding:8px 16px;border-radius:8px}
+  .pr .merge{background:#238636;color:#fff}
+  .pr .close{border:1px solid #2b3442;color:#b9c1d1}
+
+  /* floating caption pill (like a narrator) */
+  .cap{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:9;pointer-events:none}
+  .cap>span{max-width:76%;text-align:center;font-size:23px;font-weight:600;line-height:1.35;padding:13px 26px;border-radius:14px;
+    background:#0d1117f2;border:1px solid #2b3442;box-shadow:0 14px 44px #00000088;
+    opacity:0;transform:translateY(8px);transition:.4s}
+  .cap>span.show{opacity:1;transform:none}
   .cap b{color:var(--accent)} .cap .g{color:var(--pass)} .cap .r{color:var(--fail)}
-  .cap code{font-family:var(--mono);color:#ffcf7a;font-size:.9em}
+  .cap code{font-family:var(--mono);color:#ffcf7a;font-size:.92em}
 </style>
 </head>
 <body>
 <div class="stage">
-  <canvas id="g"></canvas>
-
   <div class="top">
     <div class="wm"><span class="dot"></span>SOBER <small>· CI/CD for Agent Brains</small></div>
     <div class="prog"><i id="prog"></i></div>
   </div>
 
-  <div class="hud" id="hud">
-    <span class="pill"><span class="k">nodes</span>&nbsp;<b id="mN">0</b></span>
-    <span class="pill" id="mDiff" style="display:none"><span class="k">removed</span>&nbsp;<b class="del" id="mDel">0</b></span>
-    <span class="pill state" id="mState" data-s="fail"><span class="led"></span><b id="mStateT">LEAK</b></span>
+  <!-- split demo -->
+  <div class="demo" id="demo">
+    <div class="term">
+      <div class="tcard">
+        <div class="thead"><i class="r"></i><i class="y"></i><i class="g2"></i><span>sober — memory CI</span></div>
+        <div class="cli" id="cli"></div>
+      </div>
+    </div>
+    <div class="gwrap">
+      <div class="gcard">
+        <div class="gtitle">knowledge graph · live</div>
+        <div class="hud">
+          <span class="pill"><span class="k">nodes</span>&nbsp;<b id="mN">0</b></span>
+          <span class="pill" id="mDiff" style="display:none"><span class="k">removed</span>&nbsp;<b class="del" id="mDel">0</b></span>
+          <span class="pill state" id="mState" data-s="fail"><span class="led"></span><b id="mStateT">LEAK</b></span>
+        </div>
+        <canvas id="g"></canvas>
+      </div>
+    </div>
   </div>
 
   <!-- text scenes -->
@@ -89,17 +135,30 @@
   <div class="scene" id="sProblem">
     <div class="eyebrow">why it matters</div>
     <div class="rows">
-      <div class="row" data-i="0"><span class="x">✗</span> No <b>test</b> stops a leaked secret staying recallable</div>
-      <div class="row" data-i="1"><span class="x">✗</span> No <b>diff</b> of what a re-ingest or improve() changed</div>
-      <div class="row" data-i="2"><span class="x">✗</span> No <b>bisect</b> to find which batch poisoned the brain</div>
-      <div class="row" data-i="3"><span class="x">✗</span> No <b>gate</b> before memory ships to production</div>
+      <div class="row" data-i="0"><span class="x">✗</span> No <b>&nbsp;test&nbsp;</b> stops a leaked secret staying recallable</div>
+      <div class="row" data-i="1"><span class="x">✗</span> No <b>&nbsp;diff&nbsp;</b> of what a re-ingest or improve() changed</div>
+      <div class="row" data-i="2"><span class="x">✗</span> No <b>&nbsp;bisect&nbsp;</b> to find which batch poisoned the brain</div>
+      <div class="row" data-i="3"><span class="x">✗</span> No <b>&nbsp;gate&nbsp;</b> before memory ships to production</div>
     </div>
   </div>
 
   <div class="scene" id="sWhat">
     <div class="eyebrow">what sober is</div>
-    <h2>CI/CD for agent brains — a <span class="amber">brain</span> CLI + GitHub Action</h2>
-    <p>Test, diff, bisect, gate and deploy a Cognee knowledge graph like any other build artifact.</p>
+    <h2>CI/CD for agent brains — a <span class="amber">brain</span> CLI + GitHub Action, built on Cognee</h2>
+    <p>Test, diff, bisect, gate and deploy a knowledge graph like any other build artifact.</p>
+  </div>
+
+  <div class="scene" id="sPR">
+    <div class="eyebrow">the cd half · every night</div>
+    <div class="pr">
+      <div class="ph"><span class="badge">✓ checks passed</span><span class="pt">🌙 Nightly brain self-improvement <span class="ic2">#42</span></span></div>
+      <div class="pb">
+        <div class="li"><span>🧪</span><div><b>Eval gate:</b> green before → improve() → green after (11/11)</div></div>
+        <div class="li"><span>🔀</span><div><b>Graph diff:</b> +9 nodes / +14 edges distilled from 14 real sessions</div></div>
+        <div class="li"><span>🔒</span><div><b>Forbidden-knowledge:</b> 0 leaks across all paraphrase probes</div></div>
+      </div>
+      <div class="pf"><span class="btn merge">Merge — deploy the smarter brain</span><span class="btn close">Close</span></div>
+    </div>
   </div>
 
   <div class="scene" id="sProof">
@@ -107,7 +166,7 @@
     <div class="stat">
       <div><b class="r">12/12</b><span class="lab">leak before</span></div>
       <div><b class="g">0/12</b><span class="lab">leak after forget()</span></div>
-      <div><b class="amber">16n/32e</b><span class="lab">removed, runbooks intact</span></div>
+      <div><b class="amber">16n/32e</b><span class="lab">removed · runbooks intact</span></div>
     </div>
   </div>
 
@@ -125,120 +184,156 @@
 (function(){
   const $=s=>document.querySelector(s);
 
-  // ---------- graph engine (polished) ----------
+  // ---------- graph engine (quiet, dense, technical) ----------
   const cv=$("#g"),ctx=cv.getContext("2d");let W=1,H=1,DPR=1;
-  function rs(){DPR=Math.min(2,devicePixelRatio||1);W=cv.clientWidth||1280;H=cv.clientHeight||720;
+  function rs(){DPR=Math.min(2,devicePixelRatio||1);W=cv.clientWidth||560;H=cv.clientHeight||560;
     cv.width=Math.max(1,W*DPR|0);cv.height=Math.max(1,H*DPR|0);ctx.setTransform(DPR,0,0,DPR,0,0);}
   addEventListener("resize",rs);if(window.ResizeObserver){try{new ResizeObserver(rs).observe(cv)}catch(e){}}
   const CT={TextDocument:"--doc",DocumentChunk:"--chunk",Entity:"--entity",EntityType:"--etype",TextSummary:"--summary"};
-  const RAD={TextDocument:13,DocumentChunk:9,Entity:11,EntityType:9,TextSummary:9};
+  const RAD={TextDocument:6.5,DocumentChunk:3.2,Entity:5,EntityType:4,TextSummary:4.2};
   const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
   const COL={};["--doc","--chunk","--entity","--etype","--summary","--accent"].forEach(k=>COL[k]=css(k));
   const col=t=>COL[CT[t]||"--chunk"];
   const hexA=(h,a)=>{h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");
     return`rgba(${parseInt(h.slice(0,2),16)},${parseInt(h.slice(2,4),16)},${parseInt(h.slice(4,6),16)},${a})`;};
-  const litRGBA=(h,l,a)=>{h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");
-    let r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
-    return`rgba(${(r+(255-r)*l)|0},${(g+(255-g)*l)|0},${(b+(255-b)*l)|0},${a})`;};
-  const H_N=[["doc_db","DB Outage Runbook","TextDocument"],["doc_cache","Cache Runbook","TextDocument"],["doc_deploy","Deploy Runbook","TextDocument"],
-    ["doc_oncall","On-Call Guide","TextDocument"],["doc_map","Service Map","TextDocument"],
-    ["ch_db","chunk","DocumentChunk"],["ch_cache","chunk","DocumentChunk"],["ch_deploy","chunk","DocumentChunk"],["ch_oncall","chunk","DocumentChunk"],
-    ["e_primary","db-primary","Entity"],["e_replica","db-replica-1","Entity"],["e_redis","Redis","Entity"],["e_shipit","shipit","Entity"],
-    ["e_orders","orders","Entity"],["e_pager","PagerDuty","Entity"],["t_svc","Service","EntityType"],["t_tool","Tool","EntityType"],["sum_ops","summary","TextSummary"]];
-  const H_E=[["doc_db","ch_db"],["doc_cache","ch_cache"],["doc_deploy","ch_deploy"],["doc_oncall","ch_oncall"],["ch_db","e_replica"],["ch_db","e_primary"],
-    ["ch_cache","e_redis"],["ch_deploy","e_shipit"],["ch_oncall","e_pager"],["doc_map","e_orders"],["doc_map","e_primary"],["doc_map","e_redis"],
-    ["e_orders","e_primary"],["e_orders","e_redis"],["e_primary","t_svc"],["e_replica","t_svc"],["e_redis","t_svc"],["e_shipit","t_tool"],["e_pager","t_tool"],
-    ["sum_ops","doc_db"],["sum_ops","doc_deploy"],["sum_ops","doc_oncall"]];
-  const S_N=[["doc_key","Launch Key (RETRACTED)","TextDocument"],["ch_key","launch code","DocumentChunk"],
+
+  // dense sample graph — 5 runbooks fanned into chunks/entities (representative of a real cognify)
+  const N0=[],E0=[];
+  const docs=[["doc_db","DB Outage Runbook"],["doc_cache","Cache Runbook"],["doc_deploy","Deploy Runbook"],["doc_oncall","On-Call Guide"],["doc_map","Service Map"]];
+  docs.forEach(d=>N0.push([d[0],d[1],"TextDocument"]));
+  const ENTS=[["e_primary","db-primary"],["e_replica","db-replica-1"],["e_redis","Redis"],["e_shipit","shipit"],["e_orders","orders"],
+    ["e_pager","PagerDuty"],["e_lb","load balancer"],["e_pg","Postgres"],["e_kafka","Kafka"],["e_inv","inventory"],["e_api","api-gateway"],["e_slo","SLO 99.9"]];
+  ENTS.forEach(e=>N0.push([e[0],e[1],"Entity"]));
+  [["t_svc","Service"],["t_tool","Tool"]].forEach(t=>N0.push([t[0],t[1],"EntityType"]));
+  [["sum_ops","ops summary"],["sum_dep","deploy summary"]].forEach(s=>N0.push([s[0],s[1],"TextSummary"]));
+  // 3 chunks per doc
+  docs.forEach((d,di)=>{for(let c=0;c<3;c++){const id=`ch_${di}_${c}`;N0.push([id,"chunk","DocumentChunk"]);E0.push([d[0],id,"contains"]);
+    E0.push([id,ENTS[(di*3+c)%ENTS.length][0],"mentions"]);E0.push([id,ENTS[(di*2+c+4)%ENTS.length][0],"mentions"]);}});
+  E0.push(["e_orders","e_primary"],["e_orders","e_redis"],["e_inv","e_kafka"],["e_api","e_lb"],["e_primary","e_pg"],["e_replica","e_pg"],
+    ["e_primary","t_svc"],["e_redis","t_svc"],["e_orders","t_svc"],["e_api","t_svc"],["e_shipit","t_tool"],["e_pager","t_tool"],
+    ["sum_ops","doc_db"],["sum_ops","doc_oncall"],["sum_dep","doc_deploy"],["e_slo","doc_oncall"]);
+  // secret cluster
+  const S_N=[["doc_key","Launch Key","TextDocument"],["ch_k0","chunk","DocumentChunk"],["ch_k1","chunk","DocumentChunk"],
     ["e_code","BRAVO-DELTA-9917","Entity"],["e_arm","arm-release","Entity"],["e_pipe","release pipeline","Entity"],["sum_key","summary","TextSummary"]];
-  const S_E=[["doc_key","ch_key"],["ch_key","e_code"],["e_code","e_arm"],["e_arm","e_pipe"],["e_code","e_pipe"],["sum_key","doc_key"],["ch_key","e_pipe"],["e_code","e_orders"]];
+  const S_E=[["doc_key","ch_k0"],["doc_key","ch_k1"],["ch_k0","e_code"],["ch_k1","e_pipe"],["e_code","e_arm"],["e_arm","e_pipe"],["e_code","e_pipe"],["sum_key","doc_key"],["e_code","e_orders"]];
   const SEC=new Set(S_N.map(n=>n[0]));
   let N=[],E=[],byId=new Map();
   function build(secret){
-    byId=new Map();const nn=H_N.concat(secret?S_N:[]),ee=H_E.concat(secret?S_E:[]);
-    N=nn.map((n,i)=>{const a=i/nn.length*6.283;return{id:n[0],name:n[1],type:n[2],
-      x:W/2+Math.cos(a)*Math.min(W,H)*.30,y:H/2+Math.sin(a)*Math.min(W,H)*.30,vx:0,vy:0,r:RAD[n[2]]||9,alpha:1,removing:0,pulse:0};});
+    byId=new Map();const nn=N0.concat(secret?S_N:[]),ee=E0.concat(secret?S_E:[]);
+    N=nn.map((n,i)=>{const a=i/nn.length*6.283,rr=.18+.16*((i*7)%10)/10;return{id:n[0],name:n[1],type:n[2],
+      x:W/2+Math.cos(a)*Math.min(W,H)*rr*2 ,y:H/2+Math.sin(a)*Math.min(W,H)*rr*2,vx:0,vy:0,r:RAD[n[2]]||4,alpha:1,removing:0,pulse:0};});
     N.forEach(n=>byId.set(n.id,n));
     E=ee.map(e=>({source:e[0],target:e[1],alpha:1}));
   }
-  function step(){const rep=8000,spr=.02,len=Math.min(W,H)*.13,grav=.05,damp=.86;
+  function step(){const rep=3400,spr=.026,len=Math.min(W,H)*.115,grav=.045,damp=.86;
     for(let i=0;i<N.length;i++){const a=N[i];if(a.alpha<=0)continue;
-      for(let j=i+1;j<N.length;j++){const b=N[j];if(b.alpha<=0)continue;let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy||1;if(d2>140000)continue;
+      for(let j=i+1;j<N.length;j++){const b=N[j];if(b.alpha<=0)continue;let dx=a.x-b.x,dy=a.y-b.y,d2=dx*dx+dy*dy||1;if(d2>36000)continue;
         const f=rep/d2,d=Math.sqrt(d2);dx/=d;dy/=d;a.vx+=dx*f/60;a.vy+=dy*f/60;b.vx-=dx*f/60;b.vy-=dy*f/60;}
-      a.vx+=(W/2-a.x)*grav/60;a.vy+=(H*.46-a.y)*grav/60;}
+      a.vx+=(W/2-a.x)*grav/60;a.vy+=(H/2-a.y)*grav/60;}
     for(const e of E){const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)continue;let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,f=(d-len)*spr;dx/=d;dy/=d;a.vx+=dx*f;a.vy+=dy*f;b.vx-=dx*f;b.vy-=dy*f;}
-    for(const n of N){n.vx*=damp;n.vy*=damp;n.x+=n.vx;n.y+=n.vy;n.x=Math.max(40,Math.min(W-40,n.x));n.y=Math.max(60,Math.min(H-120,n.y));if(n.pulse>0)n.pulse*=.9;}}
+    for(const n of N){n.vx*=damp;n.vy*=damp;n.x+=n.vx;n.y+=n.vy;n.x=Math.max(18,Math.min(W-18,n.x));n.y=Math.max(40,Math.min(H-18,n.y));if(n.pulse>0)n.pulse*=.9;}}
   function paint(){ctx.clearRect(0,0,W,H);
+    // hairline edges
     for(const e of E){const a=byId.get(e.source),b=byId.get(e.target);if(!a||!b)continue;const al=Math.min(a.alpha,b.alpha,e.alpha);if(al<=0)continue;
-      const rm=a.removing||b.removing,dx=b.x-a.x,dy=b.y-a.y,len=Math.hypot(dx,dy)||1,off=Math.min(30,len*.14),cx=(a.x+b.x)/2-dy/len*off,cy=(a.y+b.y)/2+dx/len*off;
-      let st,w;if(rm){st=`rgba(240,80,60,${.6*al})`;w=2;}else{const g=ctx.createLinearGradient(a.x,a.y,b.x,b.y);g.addColorStop(0,hexA(col(a.type),.18*al));g.addColorStop(1,hexA(col(b.type),.18*al));st=g;w=1.3;}
-      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.quadraticCurveTo(cx,cy,b.x,b.y);ctx.strokeStyle=st;ctx.lineWidth=w;ctx.stroke();}
-    for(const n of N){if(n.alpha<=0)continue;const base=col(n.type),R=n.r*(1+n.pulse*.5),a=n.alpha;
-      const gr=R*2.8,gg=ctx.createRadialGradient(n.x,n.y,R*.5,n.x,n.y,gr);gg.addColorStop(0,hexA(n.removing?"#f0503c":base,.32*a));gg.addColorStop(1,hexA(base,0));
-      ctx.beginPath();ctx.arc(n.x,n.y,gr,0,7);ctx.fillStyle=gg;ctx.fill();
-      if(n.removing){ctx.beginPath();ctx.arc(n.x,n.y,R+6+n.pulse*5,0,7);ctx.strokeStyle=`rgba(240,80,60,${.85*a})`;ctx.lineWidth=2.5;ctx.stroke();}
-      const sg=ctx.createRadialGradient(n.x-R*.4,n.y-R*.4,R*.15,n.x,n.y,R);sg.addColorStop(0,litRGBA(base,.45,a));sg.addColorStop(1,hexA(base,a));
-      ctx.beginPath();ctx.arc(n.x,n.y,R,0,7);ctx.fillStyle=sg;ctx.fill();ctx.lineWidth=1.2;ctx.strokeStyle=litRGBA(base,.55,a*.5);ctx.stroke();
-      if((n.type==="TextDocument"||n.type==="Entity")&&a>.4){ctx.font="600 13px ui-monospace,Menlo,monospace";ctx.textAlign="center";
-        const nm=n.name.length>17?n.name.slice(0,16)+"…":n.name,ly=n.y-R-7;ctx.fillStyle="rgba(8,10,14,.9)";ctx.fillText(nm,n.x+.7,ly+.7);ctx.fillStyle=hexA("#e6eaf2",a);ctx.fillText(nm,n.x,ly);}}}
+      const rm=a.removing||b.removing;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle=rm?`rgba(240,80,60,${.5*al})`:`rgba(122,133,150,${.16*al})`;ctx.lineWidth=rm?1.2:.7;ctx.stroke();}
+    // quiet flat dots, subtle ring
+    for(const n of N){if(n.alpha<=0)continue;const base=col(n.type),R=n.r*(1+n.pulse*.4),a=n.alpha;
+      if(n.removing){ctx.beginPath();ctx.arc(n.x,n.y,R+4+n.pulse*3,0,7);ctx.strokeStyle=`rgba(240,80,60,${.8*a})`;ctx.lineWidth=1.6;ctx.stroke();}
+      ctx.beginPath();ctx.arc(n.x,n.y,R,0,7);ctx.fillStyle=hexA(base,.92*a);ctx.fill();
+      ctx.beginPath();ctx.arc(n.x,n.y,R,0,7);ctx.strokeStyle=hexA("#0b0e13",.9*a);ctx.lineWidth=1;ctx.stroke();
+      // labels: docs + a few key entities only (avoid collisions), small & dim
+      if((n.type==="TextDocument"||LABELED.has(n.id))&&a>.4){
+        ctx.font="10.5px ui-monospace,Menlo,monospace";ctx.textAlign="center";
+        const nm=n.name.length>16?n.name.slice(0,15)+"…":n.name;
+        ctx.fillStyle=hexA("#98a2b3",.8*a);ctx.fillText(nm,n.x,n.y-R-4);}}}
+  const LABELED=new Set(["e_code","e_primary","e_orders","e_redis","e_pipe"]);
   function loop(){step();paint();requestAnimationFrame(loop);}
   rs();build(true);requestAnimationFrame(loop);
   function metrics(){$("#mN").textContent=N.filter(n=>n.alpha>.01).length;}
   function setState(p){$("#mState").dataset.s=p?"pass":"fail";$("#mStateT").textContent=p?"SOBER":"LEAK";}
   function forget(done){const v=N.filter(n=>SEC.has(n.id)),ve=E.filter(e=>SEC.has(e.source)||SEC.has(e.target));
     v.forEach(n=>{n.removing=1;n.pulse=1;});let fin=false;const end=()=>{if(fin)return;fin=true;v.forEach(n=>n.alpha=0);ve.forEach(e=>e.alpha=0);metrics();setState(true);done&&done();};
-    const dur=2200,t0=performance.now();(function a(now){const t=(now-t0)/dur;v.forEach((n,i)=>n.pulse=Math.max(n.pulse,.6+.4*Math.sin(now/90+i)));
-      if(t>.4){const k=Math.min(1,(t-.4)/.6);v.forEach(n=>{n.alpha=1-k;n.vy-=.6;});ve.forEach(e=>e.alpha=1-k);metrics();}if(t<1)requestAnimationFrame(a);else end();})(t0);setTimeout(end,dur+400);}
+    const dur=2200,t0=performance.now();(function a(now){const t=(now-t0)/dur;v.forEach((n,i)=>n.pulse=Math.max(n.pulse,.5+.4*Math.sin(now/90+i)));
+      if(t>.4){const k=Math.min(1,(t-.4)/.6);v.forEach(n=>{n.alpha=1-k;n.vy-=.4;});ve.forEach(e=>e.alpha=1-k);metrics();}if(t<1)requestAnimationFrame(a);else end();})(t0);setTimeout(end,dur+400);}
 
-  // ---------- caption + scenes + timeline ----------
+  // ---------- terminal typewriter ----------
+  const cli=$("#cli");let buf="";
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+  const render=c=>cli.innerHTML=buf+(c?'<span class="cursor">&nbsp;</span>':"");
+  function type(cmd){return new Promise(res=>{buf+='<span class="ps">$</span> <span class="cmd">';let i=0;
+    (function tk(){if(i<=cmd.length){cli.innerHTML=buf+esc(cmd.slice(0,i))+'</span><span class="cursor">&nbsp;</span>';i++;setTimeout(tk,34+Math.random()*36);}
+      else{buf+=esc(cmd)+"</span>\n";render(true);res();}})();});}
+  function out(html){return new Promise(res=>{buf+=html+"\n";render(true);setTimeout(res,150);});}
+  const nl=()=>{buf+="\n";render(true);};
+
+  // ---------- captions / scenes / timeline ----------
   const capEl=$("#cap");
   function cap(html){capEl.classList.remove("show");capEl.innerHTML=html;requestAnimationFrame(()=>capEl.classList.add("show"));}
-  const scenes=["sTitle","sProblem","sWhat","sProof","sOutro"];
-  function show(id){scenes.forEach(s=>$("#"+s).classList.toggle("show",s===id));}
-  function hideScenes(){scenes.forEach(s=>$("#"+s).classList.remove("show"));}
-  const PACE=1.4; // slow dwells for readability → ~90s reel
+  const scenes=["sTitle","sProblem","sWhat","sPR","sProof","sOutro"];
+  const show=id=>scenes.forEach(s=>$("#"+s).classList.toggle("show",s===id));
+  const hideScenes=()=>scenes.forEach(s=>$("#"+s).classList.remove("show"));
+  const PACE=1.32; // stretch dwells → ~110s total (typing time is unaffected)
   const wait=ms=>new Promise(r=>setTimeout(r,ms*PACE));
-
-  const TOTAL=90000;let T0=0;
+  const TOTAL=112000;let T0=0;
   function prog(){if(!T0)return;const p=Math.min(100,(performance.now()-T0)/TOTAL*100);$("#prog").style.width=p+"%";if(p<100)requestAnimationFrame(prog);}
 
   async function run(){
     T0=performance.now();requestAnimationFrame(prog);
-    // 1 — title
+    // 1 — title (0:00)
     show("sTitle");cap("Your agent's memory decides what it knows, says, and does.");
-    await wait(3400);cap("But it ships with <b>no tests, no diff, no rollback.</b>");await wait(3200);
-    // 2 — problem
+    await wait(4200);cap("But it ships with <b>no tests, no diff, no rollback.</b>");await wait(3800);
+    // 2 — problem (0:08)
     show("sProblem");cap("It mutates in place — <b>silently.</b>");
-    for(let i=0;i<4;i++){$('.row[data-i="'+i+'"]').classList.add("show");await wait(1500);}
-    await wait(1400);
-    // 3 — what
-    show("sWhat");cap("SOBER is <b>CI/CD for agent brains</b> — a <code>brain</code> CLI + GitHub Action.");await wait(4200);
-    // 4 — reveal graph
-    hideScenes();$("#g").classList.add("show");$("#hud").classList.add("show");build(true);metrics();setState(false);
-    cap("Here's a brain built from ops runbooks — with a <b>leaked launch code</b> hidden inside.");await wait(4200);
-    // 5 — run CI
-    cap("Run the <b>memory CI</b> —");await wait(2000);
-    setState(false);cap("the forbidden-knowledge test catches it. <span class='r'>🔴 6/11 — the build fails.</span>");await wait(3800);
-    // 6 — forget
-    cap("<b>forget(</b><code>node_set=\"retracted\"</code><b>)</b> — surgically.");await wait(1500);
-    await new Promise(res=>{forget(()=>{$("#mDel").textContent="16n / 32e";$("#mDiff").style.display="";res();});});
-    cap("The subgraph <b>dissolves</b>, evals flip <span class='g'>🟢 11/11</span> — 16 nodes / 32 edges gone.");await wait(3800);
-    cap("A retracted secret that <b>stays</b> retracted — proven on every change.");await wait(3400);
-    // 7 — bisect
-    cap("A batch poisoned the brain? <b>git bisect</b> for memory —");await wait(2600);
-    cap("the bad batch, localized in <b>O(log n)</b> — then reverted.");await wait(3200);
-    // 8 — improve
-    cap("And a nightly <code>improve()</code> that opens its own PR — behind a <span class='g'>green gate.</span>");await wait(3800);
-    // 9 — proof
-    $("#g").classList.remove("show");$("#hud").classList.remove("show");show("sProof");
-    cap("Measured: leak rate <span class='r'>12/12</span> → <span class='g'>0/12</span>. Deterministic, no LLM judge.");await wait(4200);
-    cap("<b>Test it. Forget it. Prove it. Deploy it.</b>");await wait(3000);
-    // 10 — outro
-    show("sOutro");cap("SOBER — <b>CI/CD for Agent Brains.</b>");await wait(4200);
+    for(let i=0;i<4;i++){$('.row[data-i="'+i+'"]').classList.add("show");await wait(1700);}
+    await wait(1600);
+    // 3 — what (0:17)
+    show("sWhat");cap("SOBER is <b>CI/CD for agent brains</b> — every memory change is tested, diffed and gated.");await wait(5600);
+    // 4 — demo reveal (0:23)
+    hideScenes();$("#demo").classList.add("show");build(true);metrics();setState(false);
+    cap("A brain built from 5 ops runbooks — with a <b>leaked launch code</b> hidden inside.");await wait(4600);
+    // 5 — brain test (RED)
+    await type("brain test");
+    await out('<span class="bad">🔴 FAIL — brain failed memory CI</span>   <span class="dim">6/11 passed</span>');
+    await out('   <span class="dim">🔒 forbidden</span>  "what is the launch code"          <span class="bad">LEAK</span>');
+    await out('   <span class="dim">🔒 forbidden</span>  "emergency launch credentials"     <span class="bad">LEAK</span>');
+    await out('   <span class="dim">🧬 structure</span>  /BRAVO-DELTA-\\d+/                  <span class="bad">residue</span>');
+    cap("Memory CI probes the brain — the secret is <span class='r'>recallable. The build fails.</span>");await wait(5200);
+    // 6 — revert (forget) with graph dissolve
+    nl();await type("brain revert brain__retracted");
+    cap("<code>forget(node_set=\"retracted\")</code> — surgical. Watch the graph.");
+    await new Promise(res=>{forget(res);});
+    await out('<span class="ok">✓</span> forgot <span class="amber">brain__retracted</span> <span class="dim">(memory_only)</span>');
+    $("#mDel").textContent="16n / 32e";$("#mDiff").style.display="";
+    cap("The secret's subgraph <b>dissolves</b> — 16 nodes, 32 edges, nothing else.");await wait(4400);
+    // 7 — test green + diff
+    nl();await type("brain test");
+    await out('<span class="ok">🟢 PASS — brain is SOBER</span>   <span class="dim">11/11 passed</span>');
+    cap("Unrecallable across <span class='g'>every paraphrase probe</span> — every runbook fact intact.");await wait(4600);
+    nl();await type("brain diff");
+    await out('   <span class="bad">−16 nodes / −32 edges</span>  <span class="dim">the retracted subgraph</span>');
+    cap("A <b>forget-regression test</b> — proof, on every change, that it stays gone.");await wait(4600);
+    // 8 — bisect
+    nl();await type("brain bisect --failing-eval no-cache-flush-advice");
+    await out('   probe 1  prefix=8  full-set      <span class="bad">red</span>');
+    await out('   probe 2  prefix=5  brain__b05    <span class="ok">green</span>');
+    await out('   probe 3  prefix=7  brain__b07    <span class="bad">red</span>');
+    await out('   probe 4  prefix=6  <span class="amber">brain__b06</span>    <span class="bad">red</span>');
+    await out('   <span class="amber">▸ culprit: brain__b06</span>  <span class="dim">4 probes · linear = 8</span>');
+    cap("A poisoned batch? <b>git bisect for memory</b> — culprit in <b>O(log n)</b>, then reverted.");await wait(5600);
+    // 9 — nightly PR (1:20)
+    $("#demo").classList.remove("show");show("sPR");
+    cap("And every night, the brain distills real sessions — <b>behind a green eval gate</b> —");await wait(4600);
+    cap("and opens <b>its own pull request</b>. A human merges to deploy the smarter brain.");await wait(4800);
+    // 10 — proof (1:32)
+    show("sProof");cap("Measured: leak rate <span class='r'>12/12</span> → <span class='g'>0/12</span>. Deterministic — no LLM judge.");await wait(5200);
+    cap("<b>Test it. Forget it. Prove it. Deploy it.</b>");await wait(3600);
+    // 11 — outro (1:42)
+    show("sOutro");cap("SOBER — <b>CI/CD for Agent Brains</b> · built on Cognee.");await wait(5200);
     $("#prog").style.width="100%";
-    window.__done=true; // signal for the recorder
+    window.__done=true;
   }
-  // expose a manual start + autostart
   window.startReel=run;
   setTimeout(()=>{if(!T0)run();},600);
 })();

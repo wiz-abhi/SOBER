@@ -297,26 +297,25 @@
       ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.quadraticCurveTo(cx,cy,b.x,b.y);
       ctx.strokeStyle=stroke; ctx.lineWidth=w; ctx.stroke();
     }
-    // nodes: soft glow halo + radial sphere shading
+    // nodes: quiet flat dots — faint halo, subtle top-light, dark ring (no bloom)
     for(const n of N){
       if(n.alpha<=0) continue;
       const base=col(n.type); const R=n.r*(1+(n.pulse*0.5)); const a=n.alpha;
-      const gr=R*2.7, gg=ctx.createRadialGradient(n.x,n.y,R*0.5,n.x,n.y,gr);
-      gg.addColorStop(0,hexA(n.removing?"#f0503c":base,0.30*a)); gg.addColorStop(1,hexA(base,0));
+      const gr=R*1.7, gg=ctx.createRadialGradient(n.x,n.y,R*0.6,n.x,n.y,gr);
+      gg.addColorStop(0,hexA(n.removing?"#f0503c":base,0.10*a)); gg.addColorStop(1,hexA(base,0));
       ctx.beginPath(); ctx.arc(n.x,n.y,gr,0,7); ctx.fillStyle=gg; ctx.fill();
       if(n.removing){ ctx.beginPath(); ctx.arc(n.x,n.y,R+5+n.pulse*4,0,7);
         ctx.strokeStyle=`rgba(240,80,60,${0.85*a})`; ctx.lineWidth=2; ctx.stroke(); }
       const sg=ctx.createRadialGradient(n.x-R*0.4,n.y-R*0.4,R*0.15,n.x,n.y,R);
-      sg.addColorStop(0,litRGBA(base,0.45,a)); sg.addColorStop(1,hexA(base,a));
+      sg.addColorStop(0,litRGBA(base,0.22,0.92*a)); sg.addColorStop(1,hexA(base,0.92*a));
       ctx.beginPath(); ctx.arc(n.x,n.y,R,0,7); ctx.fillStyle=sg; ctx.fill();
-      ctx.lineWidth=1; ctx.strokeStyle=litRGBA(base,0.55,a*0.5); ctx.stroke();
+      ctx.lineWidth=1; ctx.strokeStyle=hexA("#0b0e13",0.9*a); ctx.stroke();
       if(hover===n){ ctx.beginPath(); ctx.arc(n.x,n.y,R+4,0,7);
         ctx.strokeStyle=hexA(COL["--accent"],0.9); ctx.lineWidth=2; ctx.stroke(); }
       if((n.type==="TextDocument"||n.type==="Entity"||hover===n) && n.alpha>0.4){
-        ctx.font="600 11px ui-monospace,Menlo,Consolas,monospace"; ctx.textAlign="center";
-        const ly=n.y-R-6;
-        ctx.fillStyle="rgba(8,10,14,0.9)"; ctx.fillText(short(n.name), n.x+0.7, ly+0.7);
-        ctx.fillStyle=hexA("#dfe4ee", n.alpha); ctx.fillText(short(n.name), n.x, ly);
+        ctx.font="10.5px ui-monospace,Menlo,Consolas,monospace"; ctx.textAlign="center";
+        const ly=n.y-R-5;
+        ctx.fillStyle=hexA("#98a2b3",0.85*n.alpha); ctx.fillText(short(n.name), n.x, ly);
       }
     }
   }
